@@ -1,0 +1,52 @@
+
+--> Fuss
+	beidfüßig	->	0
+	linker Fuß	->	1
+	rechter Fuß	->	2
+	
+--> Positionen:
+    KEINE   ->  0
+	Torwart	->	1
+	Innenverteidiger	->	2
+	Linker Verteidiger	->	3
+	Rechter Verteidiger	->	4
+	Defensives Mittelfeld	->	5
+	Zentrales Mittelfeld	->	6
+	Offensives Mittelfeld, Hängende Spitze	->	7
+	Linksaußen	->	8
+	Rechtsaußen	->	9
+	Mittelstürmer	->	10
+
+--> SQL-Table, tbl_personen:
+	ID	            INTEGER
+	Land_ID	        INTEGER von tbl_land
+	Verein_ID	    INTEGER von tbl_vereine
+	TrikotNr	    INTEGER
+	Vorname 	    String
+	Nachname	    String
+	Geburtsdatum	Date
+	Groesse 	    INTEGER
+	Fuss    	    INTEGER
+	Position	    INTEGER
+	Position2	    INTEGER
+	Position3	    INTEGER
+	Nationalspieler	Boolean
+	VertragVon	    Date
+	VertragBis	    Date
+	Marktwert	    INTEGER
+	Technik         INTEGER
+	Einsatz         INTEGER
+	Schnelligkeit   INTEGER
+	Fitness         INTEGER
+
+--> SQL-Table, tbl_vereine:
+    ID                  INTEGER
+    Stadt_ID            INTEGER von tbl_stadt
+    Liga_ID             INTEGER von tbl_liga
+    Name                STRING
+    Tabellenplatz       INTEGER
+    Gruendung           DATE
+    Vereinsfarben       STRING
+    Stadion             STRING
+    Transfermarkt_Id    INTEGER
+    Geld                INTEGER
