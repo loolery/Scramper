@@ -81,3 +81,25 @@ def search_teamlinks(url):
         a = t.find("a", href=True)
         team_link.append('https://www.transfermarkt.de' + a.get('href', None))
     return team_link
+
+def wiki_suche(url):
+    soup = soupobj(url)
+    dictionary = {}
+    chars = "0123456789,"
+    # Suche die Tabelle im Quelltext
+    try: table = soup.find("table", {"class": "wikitable"})
+    except: result = None   #Tabelle konnte nicht gefunden werden.
+    else:
+        #Suche nach den Daten in den Feldern 'Name' & '2021'
+        for row in table.tbody.find_all("tr"):
+            name_col = row.find("td", {"style": "text-align:left"})
+            if name_col is not None:
+                name = name_col.text.strip()
+                for char in chars:
+                    name = name.replace(char, "")
+                data_cols = row.find_all("td")
+                einw_2021 = data_cols[-6].text.strip().replace('.', '')
+                bundesland = data_cols[-1].text.strip().split(u'\xa0')[0]
+                 dictionary[name] = [bundesland, einw_2021]
+                result = dictionary.items()
+    return result
