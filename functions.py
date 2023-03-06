@@ -100,6 +100,6 @@ def wiki_suche(url):
                 data_cols = row.find_all("td")
                 einw_2021 = data_cols[-6].text.strip().replace('.', '')
                 bundesland = data_cols[-1].text.strip().split(u'\xa0')[0]
-                 dictionary[name] = [bundesland, einw_2021]
+                dictionary[name] = [bundesland, einw_2021]
                 result = dictionary.items()
     return result
