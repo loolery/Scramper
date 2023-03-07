@@ -1,3 +1,13 @@
+Wiki-Seiten:
+    https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dtelisten_nach_L%C3%A4ndern
+    https://de.wikipedia.org/wiki/Liste_der_Gro%C3%9F-_und_Mittelst%C3%A4dte_in_Deutschland
+    https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_im_Vereinigten_K%C3%B6nigreich
+    https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Spanien
+    https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Frankreich
+    https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Italien
+
+Ländernamen in English:
+    https://deutsch-werden.de/de/liste-aller-laender-auf-englisch-deutsch
 
 --> Fuss
 	beidfüßig	->	0

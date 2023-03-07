@@ -85,8 +85,8 @@ def search_teamlinks(url):
 def staedte_suche(url):
     #sucht nach den Städten eines Landes, deren Einwohnerzahl und dem dazu gehörigen
     #Bundeslandes, der Parameter muss die URL zur wikipediaseite mit den Daten sein.
-    # Rückgabe ist ein dictionary mit einer Liste drin: dic[1][1]
-    # im Falle UKs wird das Land noch mit angehängt also: dic[1][2]
+    # Rückgabe ist ein tuple mit einer Liste drin: tuple[1][1]
+    # im Falle UKs wird das Land noch mit angehängt also: tuple[1][2]
     soup = soupobj(url)
     dictionary = {}
     chars = "0123456789,"
@@ -117,5 +117,60 @@ def staedte_suche(url):
                     einw_2021 = data_cols[-3].text.strip().replace('.', '')
                     bundesland = data_cols[-2].text.strip().split(u'\xa0')[0].replace('*', '')
                     dictionary[name] = [bundesland, einw_2021]
-                result = dictionary.items()
-    return result
+    return dictionary.items()
+
+def search_fifa():
+    # Liest auf Transfermarkt.de die FiFA-Weltrangliste ein und
+    # gibt diese als tuple zurück. tuple[1][1]
+    url = 'https://www.transfermarkt.de/statistik/weltrangliste?page='
+    chars = "123456789"
+    dictionary = {}
+    counter = 0
+    for page in chars:
+        soup = soupobj(url + page)
+        # Suche die Tabelle im Quelltext
+        try: table = soup.find("table", {"class": "items"})
+        except: return None  # Tabelle konnte nicht gefunden werden.
+        else:
+            for row in table.tbody.find_all("td", {"class": "hauptlink"}):
+                try:
+                    title = row.find("a", href=True)
+                    img = row.find("img", src=True)
+                    picture = img.get('src', None).split("?lm=")[0]
+                except: counter += 1  # jeder 2ter Durchlauf muss abgefangen werden.
+                else:
+                    name = title.get('title', None)
+                    punkte = table.tbody.find("td", {"class": "zentriert hauptlink"}).text.strip()
+                    dictionary[name] = [picture, punkte]
+    return dictionary.items()
+
+def landerinfo_suche():
+    # läd ein tuple von Wikipedia mit allen Staaten, deren englischen Namen und
+    # die Einwohnerzahl: tuple[1][1]
+    soup = soupobj('https://de.wikipedia.org/wiki/Liste_der_Staaten_der_Erde')
+    dictionary = {}
+    chars = "0123456789,"
+    count = 0
+    # Suche die Tabelle im Quelltext
+    try: table = soup.find("table", {"class": "wikitable"})
+    except: result = None   #Tabelle konnte nicht gefunden werden.
+    else:
+        #Suche nach den Daten in den Feldern 'Name', 'Bundesland' 'aktuellste Einwohnerzahl'
+        for row in table.tbody.find_all("tr"):
+            count += 1
+            if count >= 5:
+                try: name_col = row.find("a", title=True)
+                except: print(f' ERROR...')
+                else:
+                    if name_col is not None:
+                        name = name_col.text.strip()
+                    for char in chars:
+                        name = name.replace(char, "")
+
+                    data_cols = row.find_all("td")
+                    try: name_englisch = data_cols[-2].text.strip().replace('.', '')
+                    except: continue
+                    else:
+                        einwohner = data_cols[-9].text.strip().split(u'\xa0')[0].replace('*', '')
+                        dictionary[name] = [name_englisch, einwohner]
+    return dictionary.items()
