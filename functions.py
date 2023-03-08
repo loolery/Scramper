@@ -145,11 +145,11 @@ def search_fifa():
     return dictionary.items()
 
 def landerinfo_suche():
-    # läd ein tuple von Wikipedia mit allen Staaten, deren englischen Namen und
-    # die Einwohnerzahl: tuple[1][1]
+    # läd ein tuple von Wikipedia mit allen Staaten, deren englischen Namen,
+    # die Hauptstadt und die Einwohnerzahl: tuple[1][2]
     soup = soupobj('https://de.wikipedia.org/wiki/Liste_der_Staaten_der_Erde')
     dictionary = {}
-    chars = "0123456789,"
+    chars = "0123456789,[]"
     count = 0
     # Suche die Tabelle im Quelltext
     try: table = soup.find("table", {"class": "wikitable"})
@@ -164,13 +164,14 @@ def landerinfo_suche():
                 else:
                     if name_col is not None:
                         name = name_col.text.strip()
-                    for char in chars:
-                        name = name.replace(char, "")
-
                     data_cols = row.find_all("td")
                     try: name_englisch = data_cols[-2].text.strip().replace('.', '')
                     except: continue
                     else:
-                        einwohner = data_cols[-9].text.strip().split(u'\xa0')[0].replace('*', '')
-                        dictionary[name] = [name_englisch, einwohner]
+                        hstadt = data_cols[-10].text.strip().split(u'\xa0')[0].replace('*', '')
+                        einwohner = data_cols[-9].text.strip().split(u'\xa0')[0].replace('.', '').replace('*', '').split('K')[0]
+                        for char in chars:
+                            name = name.replace(char, "").split('(')[0]
+                            hauptstadt = hstadt.replace(char, "").split('[')[0].split('(')[0]
+                        dictionary[name] = [name_englisch, hauptstadt, einwohner]
     return dictionary.items()
