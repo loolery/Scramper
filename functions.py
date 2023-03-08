@@ -121,7 +121,7 @@ def staedte_suche(url):
 
 def search_fifa():
     # Liest auf Transfermarkt.de die FiFA-Weltrangliste ein und
-    # gibt diese als tuple zurück. tuple[1][1]
+    # gibt den Ländernamen und die Punkte als tuple zurück. tuple[1][1]
     url = 'https://www.transfermarkt.de/statistik/weltrangliste?page='
     chars = "123456789"
     dictionary = {}
@@ -141,15 +141,15 @@ def search_fifa():
                 else:
                     name = title.get('title', None)
                     punkte = table.tbody.find("td", {"class": "zentriert hauptlink"}).text.strip()
-                    dictionary[name] = [picture, punkte]
+                    dictionary[name] = [punkte, picture]
     return dictionary.items()
 
 def landerinfo_suche():
     # läd ein tuple von Wikipedia mit allen Staaten, deren englischen Namen,
-    # die Hauptstadt und die Einwohnerzahl: tuple[1][2]
+    # die Hauptstadt, die Adresse der Fahne.jpg, und die Einwohnerzahl: tuple[1][3]
     soup = soupobj('https://de.wikipedia.org/wiki/Liste_der_Staaten_der_Erde')
     dictionary = {}
-    chars = "0123456789,[]"
+    chars = "0123456789,#%&$"
     count = 0
     # Suche die Tabelle im Quelltext
     try: table = soup.find("table", {"class": "wikitable"})
@@ -170,8 +170,9 @@ def landerinfo_suche():
                     else:
                         hstadt = data_cols[-10].text.strip().split(u'\xa0')[0].replace('*', '')
                         einwohner = data_cols[-9].text.strip().split(u'\xa0')[0].replace('.', '').replace('*', '').split('K')[0]
+                        fahne = "https:" + data_cols[-6].find("img", src=True).get('src', None)
                         for char in chars:
                             name = name.replace(char, "").split('(')[0]
                             hauptstadt = hstadt.replace(char, "").split('[')[0].split('(')[0]
-                        dictionary[name] = [name_englisch, hauptstadt, einwohner]
+                        dictionary[name] = [name_englisch, hauptstadt, fahne, einwohner]
     return dictionary.items()
