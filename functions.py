@@ -132,15 +132,16 @@ def search_fifa():
         try: table = soup.find("table", {"class": "items"})
         except: return None  # Tabelle konnte nicht gefunden werden.
         else:
-            for row in table.tbody.find_all("td", {"class": "hauptlink"}):
+            for tr in table.tbody.find_all("tr"):
+                td = tr.find("td", {"class": "hauptlink"})
                 try:
-                    title = row.find("a", href=True)
-                    img = row.find("img", src=True)
+                    title = td.find("a", href=True)
+                    img = td.find("img", src=True)
                     picture = img.get('src', None).split("?lm=")[0]
                 except: counter += 1  # jeder 2ter Durchlauf muss abgefangen werden.
                 else:
                     name = title.get('title', None)
-                    punkte = table.tbody.find("td", {"class": "zentriert hauptlink"}).text.strip()
+                    punkte = tr.find("td", {"class": "zentriert hauptlink"}).text.strip()
                     dictionary[name] = [punkte, picture]
     return dictionary.items()
 
