@@ -177,3 +177,21 @@ def landerinfo_suche():
                             hauptstadt = hstadt.replace(char, "").split('[')[0].split('(')[0]
                         dictionary[name] = [name_englisch, hauptstadt, fahne, einwohner]
     return dictionary.items()
+
+def ligen_suche():
+    # läd von Transfermarkt.de alle Ligen in Europa
+    #
+    soup = soupobj('https://www.transfermarkt.de/wettbewerbe/europa/wettbewerbe')
+    dictionary = {}
+    chars = "0123456789,#%&$"
+    count = 0
+    # Suche die Tabelle im Quelltext
+    try: table = soup.find("map", {"id": "europa_Map"})
+    except: result = None   #Tabelle konnte nicht gefunden werden.
+    else:
+        for row in table.find_all("area"):
+            count += 1
+            name = row.get('title', None).strip()
+            id = row.get('href', None).split('/')[4].strip()
+            dictionary[name] = [id]
+    return dictionary.items()

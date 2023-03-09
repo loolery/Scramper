@@ -54,9 +54,9 @@ cursor = sql.cursor()
 counter = 0
 query = ""
 first = "UPDATE 'tbl_land' SET Punkte = "
-next = " WHERE Name = '"
+next = " WHERE Name LIKE '%"
 for te in test:
-    query = first + te[1][0] + next + te[0] + "';"
+    query = first + te[1][0] + next + te[0] + "%';"
     try:
         db_result = cursor.execute(query)
         if db_result: counter += 1
@@ -70,14 +70,18 @@ sql.close()
 
 #============= Erstellt tbl_stadt in DB ==========================================
 
-    #city.py
+results = func.staedte_suche('https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Frankreich')
+for di in results:
+    print(f'{di[0]} --> {di[1][0]} --> {di[1][1]}')
 
 #============= ENDE =============================================================
 
 
 #============= Erstellt tbl_liga in DB ==========================================
 
-    #liga.py
+result = func.ligen_suche()
+for res in result:
+    print(f'{res[0]} --> {res[1][0]}')
 
 #============= ENDE =============================================================
 
