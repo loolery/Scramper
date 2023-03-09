@@ -1,5 +1,4 @@
 import sqlite3
-import re
 from datetime import date
 import team as vereine
 import player as Spieler
@@ -10,6 +9,79 @@ start = time.time()     #zum messen der Performence
 today = date.today()    #damit die Url auf die aktuelle Mannschaft von diesem Jahr zeigt
 count = 0               #für die ID der sqlite zeile
 t_count = 0
+
+#============= Erstellt DB mit tbl_land  =============================================================
+
+db_name = 'new_database.db3'
+counter = 0
+sql = sqlite3.connect(db_name)   #erstellt eine sqlite-db
+cursor = sql.cursor()
+query = "CREATE TABLE IF NOT EXISTS 'tbl_land' " \
+        "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
+        "Name STRING(32) UNIQUE NOT NULL, " \
+        "Name2 STRING(32) UNIQUE NOT NULL, " \
+        "Einwohner DOUBLE NOT NULL, "\
+        "Hauptstadt STRING(32) UNIQUE NOT NULL, " \
+        "Fahne STRING(128) UNIQUE, " \
+        "Punkte INTEGER(6) NOT NULL);"
+try:
+    db_result = cursor.execute(query)
+    print(' --> Datenbank mit Tabelle tbl_land wurde erstellt!')
+except sqlite3.Error as er:
+    print('SQLite error: %s' % (' '.join(er.args)))
+    print("Exception class is: ", er.__class__)
+
+first = "INSERT INTO 'tbl_land' (Name, Name2, Einwohner, Hauptstadt, Fahne, Punkte) VALUES "
+laender = func.landerinfo_suche()
+test = func.search_fifa()
+for te in test:
+    for key in te:
+        for land in laender:
+            if key in land:
+                counter += 1
+                query = first + "('" + land[0] + "', '" + land[1][0] + "', " + land[1][3] + ", '" + land[1][1] + "', '" + land[1][2] + "', 0);"
+                try:
+                    db_result = cursor.execute(query)
+                except sqlite3.Error as er:
+                    print('SQLite error: %s' % (' '.join(er.args)))
+                    print("Exception class is: ", er.__class__)
+sql.commit()
+sql.close()
+print(f' --> {counter} Länder in Datenbank eingetragen!')
+
+sql = sqlite3.connect(db_name)   #erstellt eine sqlite-db
+cursor = sql.cursor()
+counter = 0
+query = ""
+first = "UPDATE 'tbl_land' SET Punkte = "
+next = " WHERE Name = '"
+for te in test:
+    query = first + te[1][0] + next + te[0] + "';"
+    try:
+        db_result = cursor.execute(query)
+        if db_result: counter += 1
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+        print("Exception class is: ", er.__class__)
+sql.commit()
+print(f' --> {counter}x FIFA-Punktestände in Datenbank hinzugefügt!')
+sql.close()
+#============= ENDE =============================================================
+
+#============= Erstellt tbl_stadt in DB ==========================================
+
+    #city.py
+
+#============= ENDE =============================================================
+
+
+#============= Erstellt tbl_liga in DB ==========================================
+
+    #liga.py
+
+#============= ENDE =============================================================
+
+#============= Erstellt tbl_vereine & tbl_personen in DB =======================================
 
 queryhead = "INSERT INTO tbl_vereine (ID, Stadt_ID, Liga_ID, Name, Tabellenplatz, Gruendung, Vereinsfarben, Stadion, Transfermarkt_Id, Geld) \n VALUES "
 teamdatensql = open('teamdaten.sql', 'w', encoding="utf-8")  #öffnet die datei in dem die query´s gespeichert werden
@@ -66,3 +138,6 @@ playerdatensql.close()
 sql.close()
 ende = time.time()  #stoppen und ausgabe der Performence Messung
 print('\n           --> Laufzeit: {:5.3f}s'.format(ende-start))
+
+
+#============= ENDE =============================================================
