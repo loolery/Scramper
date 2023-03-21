@@ -5,10 +5,15 @@ import player as Spieler
 import functions as func
 import time
 
+#============= Variablen definieren  =============================================================
+
 start = time.time()     #zum messen der Performence
 today = date.today()    #damit die Url auf die aktuelle Mannschaft von diesem Jahr zeigt
 count = 0               #für die ID der sqlite zeile
 t_count = 0
+
+# Städtelisten D, GB, ES, I, FR
+staedte_urls = ('https://de.wikipedia.org/wiki/Liste_der_Gro%C3%9F-_und_Mittelst%C3%A4dte_in_Deutschland', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_im_Vereinigten_K%C3%B6nigreich', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Spanien', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Italien', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Frankreich', )
 
 #============= Erstellt DB mit tbl_land  =============================================================
 
@@ -46,10 +51,10 @@ for te in test:
                     print('SQLite error: %s' % (' '.join(er.args)))
                     print("Exception class is: ", er.__class__)
 sql.commit()
-sql.close()
 print(f' --> {counter} Länder in Datenbank eingetragen!')
+sql.close()
 
-sql = sqlite3.connect(db_name)   #erstellt eine sqlite-db
+sql = sqlite3.connect(db_name)   #öffnet die sqlite-db
 cursor = sql.cursor()
 counter = 0
 query = ""
@@ -66,24 +71,45 @@ for te in test:
 sql.commit()
 print(f' --> {counter}x FIFA-Punktestände in Datenbank hinzugefügt!')
 sql.close()
-#============= ENDE =============================================================
 
 #============= Erstellt tbl_stadt in DB ==========================================
 
-results = func.staedte_suche('https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Frankreich')
-for di in results:
-    print(f'{di[0]} --> {di[1][0]} --> {di[1][1]}')
-
-#============= ENDE =============================================================
-
+sql = sqlite3.connect(db_name)   #öffnet die sqlite-db
+cursor = sql.cursor()
+query = "CREATE TABLE IF NOT EXISTS 'tbl_stadt' " \
+        "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
+        "Land_ID INTEGER REFERENCES tbl_land (ID) NOT NULL, " \
+        "Name STRING(32) UNIQUE NOT NULL, " \
+        "Einwohner DOUBLE NOT NULL);"
+try:
+    db_result = cursor.execute(query)
+    print(' --> Datenbank mit Tabelle tbl_stadt wurde erstellt!')
+except sqlite3.Error as er:
+    print('SQLite error: %s' % (' '.join(er.args)))
+    print("Exception class is: ", er.__class__)
+counter = 0
+query = ""
+first = "INSERT INTO 'tbl_land' (Land_ID, Name, Einwohner) VALUES "
+for url in staedte_urls:
+    results = func.staedte_suche(url)
+    if 'Deutschland' in url:
+        print('Deutschland')
+    elif 'Vereinigten' in url:
+        print('Vereinigte')
+    elif 'Spanien' in url:
+        print('Spanien')
+    elif 'Italien' in url:
+        print('Italien')
+    elif 'Frankreich' in url:
+        print('Frankreich')
+    for di in results:
+        print(f'{di[0]} --> {di[1][0]} --> {di[1][1]}')
 
 #============= Erstellt tbl_liga in DB ==========================================
 
 result = func.ligen_suche()
 for res in result:
     print(f'{res[0]} --> {res[1][0]}')
-
-#============= ENDE =============================================================
 
 #============= Erstellt tbl_vereine & tbl_personen in DB =======================================
 
@@ -142,6 +168,3 @@ playerdatensql.close()
 sql.close()
 ende = time.time()  #stoppen und ausgabe der Performence Messung
 print('\n           --> Laufzeit: {:5.3f}s'.format(ende-start))
-
-
-#============= ENDE =============================================================
