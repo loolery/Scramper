@@ -95,7 +95,7 @@ for url in staedte_urls:
     if 'Deutschland' in url:
         print('Deutschland')
     elif 'Vereinigten' in url:
-        print('Vereinigte')
+        print('Großbritanien')
     elif 'Spanien' in url:
         print('Spanien')
     elif 'Italien' in url:
