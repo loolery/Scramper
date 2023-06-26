@@ -102,10 +102,16 @@ class Verein():
         self.__teamcolor = []
         soup = func.soupobj(url)
         table = soup.find("p", {"class": "vereinsfarbe"})
-        table1 = table.find_all("span", style=True)
-        for t in table1:
-            if re.findall('#(?:[0-9a-fA-F]{3}){1,2}', t.get('style')):
-                self.__teamcolor.append(re.findall('#(?:[0-9a-fA-F]{3}){1,2}', t.get('style', None)))
+        if table is None or len(table) == 0:
+            self.__teamcolor.append('#FFFFFF')    #keine Vereinsfarben gefunden!
+        else:
+            table1 = table.find_all("span", style=True)
+            for t in table1:
+                if len(t) == 0:
+                    print("nothing in data!")
+                else:
+                    if re.findall('#(?:[0-9a-fA-F]{3}){1,2}', t.get('style')):
+                        self.__teamcolor.append(re.findall('#(?:[0-9a-fA-F]{3}){1,2}', t.get('style', None)))
 
     def __search_stadt(self, url):
         soup = func.soupobj(url)
@@ -134,7 +140,7 @@ def search_teamlink(url):
     return team_link
 
 # Code um die Klasse allein bei veränderungen zu testen.
-# teams = search_teamlink('https://www.transfermarkt.de/premier-league/startseite/wettbewerb/GB1')
+# teams = search_teamlink('https://www.transfermarkt.de/laliga/startseite/wettbewerb/ES1')
 # verein = []
 # for t in teams:
 #     objVerein = Verein(t)

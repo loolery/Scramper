@@ -111,17 +111,20 @@ class Player():
     def __search_positionen(self, soup):
         # mittlere-rechte Box für Positionen
         pos_all = soup.find_all("dd", {"class": "detail-position__position"})
-        position = []
-        for pos in pos_all:
-            if pos.text.strip() == "Hauptposition:":
-                continue
-            elif pos.text.strip() == "Nebenposition:":
-                continue
-            else:
-                position.append(pos.text.strip())
-        self.hauptpos = position.pop(0)
-        if len(position) > 1: self.nebenpos = position.pop(1)
-        if len(position) > 2: self.nebenpos = position.pop(2)
+        if len(pos_all) == 0:   #wenn Box nicht vorhanden ist!
+            self.hauptpos = "Mittelfeld"
+        else:
+            position = []
+            for pos in pos_all:
+                if pos.text.strip() == "Hauptposition:":
+                    continue
+                elif pos.text.strip() == "Nebenposition:":
+                    continue
+                else:
+                    position.append(pos.text.strip())
+            self.hauptpos = position.pop(0)
+            if len(position) > 1: self.nebenpos = position.pop(1)
+            if len(position) > 2: self.nebenpos = position.pop(2)
 
     def __search_allinbox(self, soup):
         # einlesen der kompletten Box auf der linken Seite und ausfiltern der benötigten Werte
@@ -222,9 +225,11 @@ class Player():
         self.einsatz = attributes['Einsatz']
         self.schnelligkeit = attributes['Schnelligkeit']
 
+
 ##############################################################
 # Für kuze tests bei umbauten an der Klasse!
-# s = Player('https://www.transfermarkt.de/julien-duranville/profil/spieler/819215')
+
+# s = Player('https://www.transfermarkt.de/curtis-durose/profil/spieler/951159')
 # print(s.get_firstname())
 # print(s.get_lastname())
 # print(s.get_trikotnr())
