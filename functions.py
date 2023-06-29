@@ -1,7 +1,19 @@
 import sqlite3
 import requests
 from bs4 import BeautifulSoup
+import subprocess
+import time
 
+def conCheck(url):
+    #prüft ob die übergeben Internet URL erreichbar ist, wenn nicht
+    #wird alle 10 sekunden wiederholt geprüft.
+    while True:
+        try:
+            subprocess.check_call('ping ' + url, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            break
+        except subprocess.CalledProcessError:
+            print('Connection failed! Next try in 10 seconds...')
+            time.sleep(10)
 def soupobj(url):
     heads = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}
     response = requests.get(url, headers=heads)

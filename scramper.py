@@ -4,7 +4,9 @@ import team as vereine
 import player as Spieler
 import functions as func
 import time
+import os, sys
 
+func.conCheck('8.8.8.8')
 #============= Variablen definieren  =============================================================
 
 start = time.time()     #zum messen der Performence
@@ -19,6 +21,9 @@ staedte_urls = ('https://de.wikipedia.org/wiki/Liste_der_Gro%C3%9F-_und_Mittelst
 
 db_name = 'new_database.db3'
 counter = 0
+if os.path.isfile(db_name):
+    os.remove(db_name)
+    print(' --> Alte Datenbank wurde gelöscht!')
 sql = sqlite3.connect(db_name)   #erstellt eine sqlite-db
 cursor = sql.cursor()
 query = "CREATE TABLE IF NOT EXISTS 'tbl_land' " \
@@ -31,7 +36,7 @@ query = "CREATE TABLE IF NOT EXISTS 'tbl_land' " \
         "Punkte INTEGER(6) NOT NULL);"
 try:
     db_result = cursor.execute(query)
-    print(' --> Datenbank mit Tabelle tbl_land wurde erstellt!')
+    print(' --> Neue Datenbank mit Tabelle tbl_land wurde erstellt!')
 except sqlite3.Error as er:
     print('SQLite error: %s' % (' '.join(er.args)))
     print("Exception class is: ", er.__class__)
