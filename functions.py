@@ -7,18 +7,27 @@ import time
 def conCheck(url):
     #prüft ob die übergeben Internet URL erreichbar ist, wenn nicht
     #wird alle 10 sekunden wiederholt geprüft.
+    if url.split("/", 1)[0] == 'https:':    #IPs können direkt gepinged werden, urls müssen erst bereinigt werden
+        url = url.split("/", 1)[1].split("/")[1]
     while True:
+        print(f"*ping - {url}")
         try:
-            subprocess.check_call('ping ' + url, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            subprocess.check_call('ping ' + url + ' -n 1', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             break
         except subprocess.CalledProcessError:
-            print('Connection failed! Next try in 10 seconds...')
+            print(f" Connection failed! Next try in 10 seconds... {url}")
             time.sleep(10)
 def soupobj(url):
     heads = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}
-    response = requests.get(url, headers=heads)
-    html = response.text
-    soup = BeautifulSoup(html, "html.parser")
+    while True:
+        try:
+            response = requests.get(url, headers=heads)
+            html = response.text
+            soup = BeautifulSoup(html, "html.parser")
+            break
+        except:
+            print(f" Connection failed! Next try in 10 seconds... {url}")
+            time.sleep(10)
     return soup
 
 def getLandId(landname):
@@ -191,15 +200,17 @@ def landerinfo_suche():
     return dictionary.items()
 
 def ligen_suche():
-    # läd von Transfermarkt.de alle Ligen in Europa
-    #
+    # läd von Transfermarkt.de alle Länder mit Ligen in Europa
+    # zurückgegeben wird der Name des Landes und deren Transfermarkt-ID
     soup = soupobj('https://www.transfermarkt.de/wettbewerbe/europa/wettbewerbe')
     dictionary = {}
     chars = "0123456789,#%&$"
     count = 0
     # Suche die Tabelle im Quelltext
     try: table = soup.find("map", {"id": "europa_Map"})
-    except: result = None   #Tabelle konnte nicht gefunden werden.
+    except:
+        result = None
+        print(' ## Error - Map mit Ländern auf Transfermarkt wurde nicht gefunden!')
     else:
         for row in table.find_all("area"):
             count += 1

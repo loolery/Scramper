@@ -4,7 +4,7 @@ import team as vereine
 import player as Spieler
 import functions as func
 import time
-import os, sys
+import os
 
 func.conCheck('8.8.8.8')
 #============= Variablen definieren  =============================================================
@@ -88,7 +88,7 @@ query = "CREATE TABLE IF NOT EXISTS 'tbl_stadt' " \
         "Einwohner DOUBLE NOT NULL);"
 try:
     db_result = cursor.execute(query)
-    print(' --> Datenbank mit Tabelle tbl_stadt wurde erstellt!')
+    print(' --> Datenbank mit Tabelle tbl_stadt wurde erstellt!\n')
 except sqlite3.Error as er:
     print('SQLite error: %s' % (' '.join(er.args)))
     print("Exception class is: ", er.__class__)
@@ -108,13 +108,14 @@ for url in staedte_urls:
     elif 'Frankreich' in url:
         print('Frankreich')
     for di in results:
-        print(f'{di[0]} --> {di[1][0]} --> {di[1][1]}')
+        print(f'{di[0]} --> {di[1][0]} --> {di[1][1]}\n')
 
 #============= Erstellt tbl_liga in DB ==========================================
 
 result = func.ligen_suche()
+print('--> Läd Ligen...')
 for res in result:
-    print(f'{res[0]} --> {res[1][0]}')
+    print(f' {res[0]} --> {res[1][0]}\n')
 
 #============= Erstellt tbl_vereine & tbl_personen in DB =======================================
 
@@ -130,13 +131,13 @@ sql = sqlite3.connect('database.db3')   #öfnet eine sqlite-db
 cursor = sql.cursor()
 query = "SELECT ID, Name, Transfermarkt_Id FROM tbl_liga ORDER BY ID"
 db_result = cursor.execute(query)
-
 for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofilen
     listTeams, listVereine = [], []
-    listTeams = func.search_teamlinks(f"https://www.transfermarkt.de/{dbr[1].replace(' ', '-').lower()}/startseite/wettbewerb/{dbr[2]}")
+    listTeams = func.search_teamlinks(f"https://www.transfermarkt.de/{dbr[1].replace(' ', '-').replace('.', '').lower()}/startseite/wettbewerb/{dbr[2]}")
+    print(f"{dbr[2]} - https://www.transfermarkt.de/{dbr[1].replace(' ', '-').lower()}/startseite/wettbewerb/{dbr[2]}")
     for team in listTeams:     #Schleife zum erstellen der einzelnen Objecte für die Vereine
         listVereine.append(vereine.Verein(team))  # Vereine werden aus der Klasse erstellt und einer Liste hinzugefügt
-        print(f"Vereinsdaten von {listVereine[-1].get_teamname()} sind geladen.")   #Kontroll Ausgabe der erstellten Vereinsobjecte.
+        print(f" Vereinsdaten von {listVereine[-1].get_teamname()} werden geladen...")   #Kontroll Ausgabe der erstellten Vereinsobjecte.
     for v in listVereine:   #Schleife durch läuft die einzelnen Vereine der Liste'
         t_count += 1
         # SQL-Query wird erstellt und in die Datei geschrieben.

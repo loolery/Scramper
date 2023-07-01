@@ -1,7 +1,7 @@
 --> Laufzeit: 5623.692s
 
-- Beim letzten Durchlauf wurde nach der 1.Bundesliga direkt in England weiter gemacht.
-- gesperrte Spieler erkennung erkennt anscheint auch in ausnahme Fällen andere Spieler.
+- Beim Durchlaufen wird nach der 1.Bundesliga direkt in England weiter gemacht.
+- gesperrte Spieler erkennung erkennt anscheint auch in seltenen Fällen andere Spieler.
     (z.b: https://www.transfermarkt.de/mohamed-ihattaren/profil/spieler/503638)
 
 Wiki-Seiten:
