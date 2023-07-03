@@ -157,6 +157,7 @@ class Player():
             elif "Vertrag bis:" in ele[0]:
                 datum2 = '30.06.' + str(today.year) if '-' in ele[1] else ele[1]
                 datum2 = '01.' + ele[1] if len(ele[1]) == 7 else datum2
+                datum2 = '30.06.' + ele[1] if len(ele[1]) == 4 else datum2
                 self.vertragbis = datetime.strptime(datum2, '%d.%m.%Y').date() if ele[1] is not None else None
 
     def __randrange_float(self, start, stop, step):
@@ -229,7 +230,7 @@ class Player():
 ##############################################################
 # Für kuze tests bei umbauten an der Klasse!
 
-# s = Player('https://www.transfermarkt.de/curtis-durose/profil/spieler/951159')
+# s = Player('https://www.transfermarkt.de/facinet-conte/profil/spieler/1149925')
 # print(s.get_firstname())
 # print(s.get_lastname())
 # print(s.get_trikotnr())

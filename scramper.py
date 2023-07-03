@@ -108,14 +108,15 @@ for url in staedte_urls:
     elif 'Frankreich' in url:
         print('Frankreich')
     for di in results:
-        print(f'{di[0]} --> {di[1][0]} --> {di[1][1]}\n')
+        print(f'{di[0]} --> {di[1][0]} --> {di[1][1]}')
+    print('\n')
 
 #============= Erstellt tbl_liga in DB ==========================================
 
 result = func.ligen_suche()
 print('--> Läd Ligen...')
 for res in result:
-    print(f' {res[0]} --> {res[1][0]}\n')
+    print(f' {res[0]} --> {res[1][0]}')
 
 #============= Erstellt tbl_vereine & tbl_personen in DB =======================================
 
@@ -134,7 +135,7 @@ db_result = cursor.execute(query)
 for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofilen
     listTeams, listVereine = [], []
     listTeams = func.search_teamlinks(f"https://www.transfermarkt.de/{dbr[1].replace(' ', '-').replace('.', '').lower()}/startseite/wettbewerb/{dbr[2]}")
-    print(f"{dbr[2]} - https://www.transfermarkt.de/{dbr[1].replace(' ', '-').lower()}/startseite/wettbewerb/{dbr[2]}")
+    print(f"\n{dbr[2]} - https://www.transfermarkt.de/{dbr[1].replace(' ', '-').lower()}/startseite/wettbewerb/{dbr[2]}")
     for team in listTeams:     #Schleife zum erstellen der einzelnen Objecte für die Vereine
         listVereine.append(vereine.Verein(team))  # Vereine werden aus der Klasse erstellt und einer Liste hinzugefügt
         print(f" Vereinsdaten von {listVereine[-1].get_teamname()} werden geladen...")   #Kontroll Ausgabe der erstellten Vereinsobjecte.

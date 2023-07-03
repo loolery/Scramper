@@ -34,6 +34,8 @@ def getLandId(landname):
     #Braucht als Parameter den Landnamen im String und gibt die in der SQLite gefundene
     #Id des Landes zurück!
     landid = 200 # Id für unbekannte
+    if landname == None:
+        landname = 'unbekanntesLand'
     sql = sqlite3.connect('database.db3')
     cursor = sql.cursor()
     query = "SELECT ID FROM tbl_land WHERE Name LIKE '%" + landname + "%' LIMIT 1"
