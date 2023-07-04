@@ -7,7 +7,6 @@
     <list default="true" id="6b8b4b4c-fe9c-46de-b2c8-ce851ebe85e3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/new_database.db3" beforeDir="false" afterPath="$PROJECT_DIR$/new_database.db3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/playerdaten.sql" beforeDir="false" afterPath="$PROJECT_DIR$/playerdaten.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scramper.py" beforeDir="false" afterPath="$PROJECT_DIR$/scramper.py" afterDir="false" />
@@ -29,7 +28,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="ProjectErrors" />
   </component>
   <component name="ProjectId" id="2LXXIlouBKs462pXxJSM3de0CyG" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -47,7 +46,7 @@
     &quot;ToolWindowRun.ShowToolbar&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;last_opened_file_path&quot;: &quot;L:/#Download/ChatGPT-2.0.4-222.223.zip&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PythonContentEntriesConfigurable&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
 }</component>
   <component name="RecentsManager">

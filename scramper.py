@@ -128,7 +128,7 @@ queryhead = "INSERT INTO tbl_personen (ID,Land_ID,Verein_ID,TrikotNr,Vorname,Nac
 playerdatensql = open('playerdaten.sql', 'w', encoding="utf-8")  # öffnet die datei in dem die query´s gespeichert werden
 playerdatensql.write(queryhead + '\n')  # schreibt den sqlheader in die Datei
 
-sql = sqlite3.connect('database.db3')   #öfnet eine sqlite-db
+sql = sqlite3.connect('database.db3')   #öffnet eine sqlite-db
 cursor = sql.cursor()
 query = "SELECT ID, Name, Transfermarkt_Id FROM tbl_liga ORDER BY ID"
 db_result = cursor.execute(query)

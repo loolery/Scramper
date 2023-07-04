@@ -9,7 +9,7 @@ import functions as func
 class Player():
 
     def __init__(self, url):
-        self.firstname, self.lastname = None, None
+        self.firstname, self.lastname, self.ausfall = None, None, None
         self.nation, self.imteamseit, self.vertragbis = None, None, None
         self.hauptpos, self.nebenpos, self.nebenpos2 = None, None, None
         self.fuss, self.nationalteam, self.gebdatum = None, None, None
@@ -17,6 +17,7 @@ class Player():
         self.technik, self.einsatz, self.schnelligkeit = 0, 0, 0
 
         soup = func.soupobj(url)
+        self.__search_ausfall(soup)
         self.__search_TrikotNr(soup)
         self.__search_name(soup)
         self.__search_marktwert(soup)
@@ -29,9 +30,13 @@ class Player():
         return self.firstname
     def get_lastname(self):
         return self.lastname
+    def get_ausfall(self):
+        return self.ausfall
     def get_geburtstag(self):
         return self.gebdatum
     def get_land(self):
+        if self.nation is None:
+            self.nation = 'unbekannt'
         return self.nation
     def get_nationalspieler(self):
         return self.nationalteam
@@ -59,6 +64,13 @@ class Player():
         return self.einsatz
     def get_schnelligkeit(self):
         return self.schnelligkeit
+
+    def __search_ausfall(self, soup):
+        # Suche nach Sperre oder Verletzungsausfall des Spielers
+        header = soup.h1
+        table = header.find_all("div", {"class": "verletzungsbox"})
+        table1 = table.find("div", {"class": "text"})
+        print(table1)
 
     def __search_name(self, soup):
         # Suche Vor und Nachname
@@ -93,7 +105,7 @@ class Player():
                 self.marktwert = self.marktwert.translate(str.maketrans('', '', suffix)) + multiplier
         self.marktwert = self.marktwert.replace(' ', '').replace(',', '')
         if '-' in self.marktwert:
-            print('! Spieler ist Suspendiert !')
+            print('! Spieler hat keinen Marktwert !')
             self.marktwert = '10001'
 
     def __search_nationalspieler(self, soup):
@@ -230,21 +242,25 @@ class Player():
 ##############################################################
 # Für kuze tests bei umbauten an der Klasse!
 
-# s = Player('https://www.transfermarkt.de/facinet-conte/profil/spieler/1149925')
-# print(s.get_firstname())
-# print(s.get_lastname())
-# print(s.get_trikotnr())
-# print(s.get_geburtstag())
-# print(s.get_fuss())
-# print(s.get_groesse())
-# print(s.get_land())
-# print(s.get_nationalspieler())
-# print(s.get_marktwert())
-# print(s.get_imteamseit())
-# print(s.get_vertragbis())
-# print(s.get_hauptpos())
-# print(s.get_nebenpos())
-# print(s.get_nebenpos2())
-# print(s.get_technik())
-# print(s.get_einsatz())
-# print(s.get_schnelligkeit())
+s = Player('https://www.transfermarkt.de/mario-vuskovic/profil/spieler/432757')
+#s = Player('https://www.transfermarkt.de/isaac-matondo/profil/spieler/485964')
+#s = Player('https://www.transfermarkt.de/joan-hartock/profil/spieler/18673')
+print(s.get_firstname())
+print(s.get_lastname())
+print(s.get_trikotnr())
+print(s.get_geburtstag())
+print(s.get_fuss())
+print(s.get_groesse())
+print(s.get_land())
+print(s.get_nationalspieler())
+print(s.get_marktwert())
+print(s.get_imteamseit())
+print(s.get_vertragbis())
+print(s.get_hauptpos())
+print(s.get_nebenpos())
+print(s.get_nebenpos2())
+print(s.get_technik())
+print(s.get_einsatz())
+print(s.get_schnelligkeit())
+print(f'  ## {s.get_land()}')
+print(f'  ## {func.getLandId(s.get_land())}')

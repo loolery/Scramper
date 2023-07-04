@@ -1,5 +1,6 @@
 import sqlite3
 import requests
+import requests_cache
 from bs4 import BeautifulSoup
 import subprocess
 import time
@@ -19,11 +20,12 @@ def conCheck(url):
             time.sleep(10)
 def soupobj(url):
     heads = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}
+    requests_cache.install_cache('my_cache', expire_after=86400)
     while True:
         try:
             response = requests.get(url, headers=heads)
             html = response.text
-            soup = BeautifulSoup(html, "html.parser")
+            soup = BeautifulSoup(html, "lxml")
             break
         except:
             print(f" Connection failed! Next try in 10 seconds... {url}")
@@ -34,7 +36,7 @@ def getLandId(landname):
     #Braucht als Parameter den Landnamen im String und gibt die in der SQLite gefundene
     #Id des Landes zurück!
     landid = 200 # Id für unbekannte
-    if landname == None:
+    if landname is None:
         landname = 'unbekanntesLand'
     sql = sqlite3.connect('database.db3')
     cursor = sql.cursor()
