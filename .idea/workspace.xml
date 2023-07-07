@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="6b8b4b4c-fe9c-46de-b2c8-ce851ebe85e3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/playerdaten.sql" beforeDir="false" afterPath="$PROJECT_DIR$/playerdaten.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scramper.py" beforeDir="false" afterPath="$PROJECT_DIR$/scramper.py" afterDir="false" />
@@ -28,7 +27,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="ProjectErrors" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectId" id="2LXXIlouBKs462pXxJSM3de0CyG" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">

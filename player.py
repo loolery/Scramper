@@ -9,17 +9,18 @@ import functions as func
 class Player():
 
     def __init__(self, url):
-        self.firstname, self.lastname, self.ausfall = None, None, None
+        self.firstname, self.lastname = None, None
         self.nation, self.imteamseit, self.vertragbis = None, None, None
         self.hauptpos, self.nebenpos, self.nebenpos2 = None, None, None
         self.fuss, self.nationalteam, self.gebdatum = None, None, None
         self.trikotnr, self.groesse, self.marktwert = None, None, None
+        self.ausfall, self.ausfallbis = False, None
         self.technik, self.einsatz, self.schnelligkeit = 0, 0, 0
 
         soup = func.soupobj(url)
+        self.__search_name(soup)
         self.__search_ausfall(soup)
         self.__search_TrikotNr(soup)
-        self.__search_name(soup)
         self.__search_marktwert(soup)
         self.__search_nationalspieler(soup)
         self.__search_positionen(soup)
@@ -32,6 +33,8 @@ class Player():
         return self.lastname
     def get_ausfall(self):
         return self.ausfall
+    def get_ausfallbis(self):
+        return self.ausfallbis
     def get_geburtstag(self):
         return self.gebdatum
     def get_land(self):
@@ -67,13 +70,22 @@ class Player():
 
     def __search_ausfall(self, soup):
         # Suche nach Sperre oder Verletzungsausfall des Spielers
-        header = soup.h1
-        table = header.find_all("div", {"class": "verletzungsbox"})
-        table1 = table.find("div", {"class": "text"})
-        print(table1)
+        try:
+            table = soup.find("div", {"class": "verletzungsbox"})
+            table1 = table.find("div", {"class": "text"})
+        except:
+            self.ausfall = False
+        else:
+            if "Dopingsperre" in table1.text:
+                match = re.search(r'\d{2}.\d{2}.\d{4}', table1.text)
+                datum = datetime.strptime(match.group(), '%d.%m.%Y').date()
+                self.ausfall = True
+                self.ausfallbis = datum
+            else:
+                self.ausfall = False    #andere Gründe müssen noch gefunden werden.
 
     def __search_name(self, soup):
-        # Suche Vor und Nachname
+        # Suche Vor- und Nachname
         header = soup.h1
         if header.contents[2].strip(): self.firstname = header.contents[2].strip()
         self.lastname = header.strong.text
@@ -85,28 +97,33 @@ class Player():
 
     def __search_TrikotNr(self, soup):
         # Suche Rückennummer
-        table = soup.find("h1", {"data-header__headline-wrapper"})
-        table1 = table.find_all("span", {"class": "data-header__shirt-number"})
-        trikotnummer = [tbl.text.replace("#", " ").strip() for tbl in table1]
-        if not trikotnummer:
+        try:
+            table = soup.find("h1", {"data-header__headline-wrapper"})
+            table1 = table.find_all("span", {"class": "data-header__shirt-number"})
+        except:
             self.trikotnr = None
         else:
+            trikotnummer = [tbl.text.replace("#", " ").strip() for tbl in table1]
             self.trikotnr = trikotnummer.pop(0)
 
     def __search_marktwert(self, soup):
         # Suche Marktwert
         self.marktwert = '10000'
-        div = soup.find_all("div", {"class": "tm-player-market-value-development__current-value"})
-        if div:
-            self.marktwert = div[0].text.strip()
-        suffixes = {' Mio. €': '0000', ',00 Mio. €': '000000', 'Tsd. €': '000'}
-        for suffix, multiplier in suffixes.items():
-            if suffix in self.marktwert:
-                self.marktwert = self.marktwert.translate(str.maketrans('', '', suffix)) + multiplier
-        self.marktwert = self.marktwert.replace(' ', '').replace(',', '')
-        if '-' in self.marktwert:
-            print('! Spieler hat keinen Marktwert !')
-            self.marktwert = '10001'
+        try:
+            div = soup.find_all("div", {"class": "tm-player-market-value-development__current-value"})
+        except:
+            self.marktwert = '10002'
+        else:
+            if div:
+                self.marktwert = div[0].text.strip()
+            suffixes = {' Mio. €': '0000', ',00 Mio. €': '000000', 'Tsd. €': '000'}
+            for suffix, multiplier in suffixes.items():
+                if suffix in self.marktwert:
+                    self.marktwert = self.marktwert.translate(str.maketrans('', '', suffix)) + multiplier
+            self.marktwert = self.marktwert.replace(' ', '').replace(',', '')
+            if '-' in self.marktwert:
+                self.marktwert = '10001'
+
 
     def __search_nationalspieler(self, soup):
         # Nationalspieler?
@@ -122,8 +139,9 @@ class Player():
 
     def __search_positionen(self, soup):
         # mittlere-rechte Box für Positionen
-        pos_all = soup.find_all("dd", {"class": "detail-position__position"})
-        if len(pos_all) == 0:   #wenn Box nicht vorhanden ist!
+        try:
+            pos_all = soup.find_all("dd", {"class": "detail-position__position"})
+        except:
             self.hauptpos = "Mittelfeld"
         else:
             position = []
@@ -243,14 +261,15 @@ class Player():
 # Für kuze tests bei umbauten an der Klasse!
 
 s = Player('https://www.transfermarkt.de/mario-vuskovic/profil/spieler/432757')
-#s = Player('https://www.transfermarkt.de/isaac-matondo/profil/spieler/485964')
-#s = Player('https://www.transfermarkt.de/joan-hartock/profil/spieler/18673')
+s = Player('https://www.transfermarkt.de/isaac-matondo/profil/spieler/485964')
+s = Player('https://www.transfermarkt.de/lee-brown/profil/spieler/120697')
 print(s.get_firstname())
 print(s.get_lastname())
 print(s.get_trikotnr())
 print(s.get_geburtstag())
 print(s.get_fuss())
 print(s.get_groesse())
+print(func.getLandId(s.get_land()[0]))
 print(s.get_land())
 print(s.get_nationalspieler())
 print(s.get_marktwert())
@@ -262,5 +281,6 @@ print(s.get_nebenpos2())
 print(s.get_technik())
 print(s.get_einsatz())
 print(s.get_schnelligkeit())
-print(f'  ## {s.get_land()}')
-print(f'  ## {func.getLandId(s.get_land())}')
+print(s.get_ausfall())
+print(s.get_ausfallbis())
+
