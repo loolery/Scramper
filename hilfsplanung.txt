@@ -1,9 +1,5 @@
 --> Laufzeit: 5623.692s
 
-- Beim Durchlaufen wird nach der 1.Bundesliga direkt in England weiter gemacht.
-- gesperrte Spieler erkennung erkennt anscheint auch in seltenen Fällen andere Spieler.
-    (z.b: https://www.transfermarkt.de/mohamed-ihattaren/profil/spieler/503638)
-
 Wiki-Seiten:
     https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dtelisten_nach_L%C3%A4ndern
 
@@ -33,18 +29,20 @@ Ländernamen in English:
 	Land_ID	        INTEGER von tbl_land
 	Verein_ID	    INTEGER von tbl_vereine
 	TrikotNr	    INTEGER
-	Vorname 	    String
-	Nachname	    String
-	Geburtsdatum	Date
+	Vorname 	    STRING
+	Nachname	    STRING
+	Geburtsdatum	DATE
 	Groesse 	    INTEGER
 	Fuss    	    INTEGER
 	Position	    INTEGER
 	Position2	    INTEGER
 	Position3	    INTEGER
-	Nationalspieler	Boolean
-	VertragVon	    Date
-	VertragBis	    Date
+	Nationalspieler	BOOLEAN
+	VertragVon	    DATE
+	VertragBis	    DATE
 	Marktwert	    INTEGER
+	Ausfall         BOOLEAN
+	AusfallBis      DATE
 	Technik         INTEGER
 	Einsatz         INTEGER
 	Schnelligkeit   INTEGER
