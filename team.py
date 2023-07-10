@@ -1,8 +1,6 @@
 import re
 from datetime import datetime
 import functions as func
-from datetime import datetime
-import functions as func
 
 class Verein():
     __tname, __transfermarktid = '', ''

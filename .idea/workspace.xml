@@ -7,9 +7,7 @@
     <list default="true" id="6b8b4b4c-fe9c-46de-b2c8-ce851ebe85e3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/player.py" beforeDir="false" afterPath="$PROJECT_DIR$/player.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playerdaten.sql" beforeDir="false" afterPath="$PROJECT_DIR$/playerdaten.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scramper.py" beforeDir="false" afterPath="$PROJECT_DIR$/scramper.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/teamdaten.sql" beforeDir="false" afterPath="$PROJECT_DIR$/teamdaten.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/team.py" beforeDir="false" afterPath="$PROJECT_DIR$/team.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +61,17 @@
       <updated>1676018324015</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ID_ORDER">
+      <list>
+        <option value="Default.Root" />
+        <option value="Default.Author" />
+        <option value="Default.Date" />
+        <option value="Default.Subject" />
+        <option value="Space.CommitStatus" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
