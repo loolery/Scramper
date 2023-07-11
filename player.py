@@ -9,10 +9,10 @@ class Player():
     def __init__(self, url):
         self.firstname, self.lastname = None, None
         self.nation, self.imteamseit, self.vertragbis = None, None, None
-        self.hauptpos, self.nebenpos, self.nebenpos2 = None, None, None
-        self.fuss, self.nationalteam, self.gebdatum = None, None, None
-        self.trikotnr, self.groesse, self.marktwert = None, None, None
-        self.ausfall, self.ausfallbis = False, None
+        self.hauptpos, self.nebenpos, self.nebenpos2 = '-', '-', '-'
+        self.fuss, self.nationalteam, self.gebdatum = 0, 0, 0
+        self.trikotnr, self.groesse, self.marktwert = 0, 0, None
+        self.ausfall, self.ausfallbis = 0, 0
         self.technik, self.einsatz, self.schnelligkeit = 0, 0, 0
 
         soup = func.soupobj(url)
@@ -26,26 +26,40 @@ class Player():
         self.__player_values(int(self.marktwert))
 
     def get_firstname(self):
+        if self.firstname is None:
+            self.firstname = '-'
         return self.firstname
     def get_lastname(self):
+        if self.lastname is None:
+            self.lastname = '-'
         return self.lastname
     def get_ausfall(self):
         return self.ausfall
     def get_ausfallbis(self):
         return self.ausfallbis
     def get_geburtstag(self):
+        if self.gebdatum is None:
+            self.gebdatum = 0
         return self.gebdatum
     def get_land(self):
         if self.nation is None:
             self.nation = 'unbekannt'
         return self.nation
     def get_nationalspieler(self):
+        if self.nationalteam is None:
+            self.nationalteam = 0
         return self.nationalteam
     def get_fuss(self):
-        return self.fuss
+        if self.fuss is None:
+            self.fuss = 0
+        return
     def get_trikotnr(self):
+        if self.trikotnr is None:
+            self.trikotnr = 0
         return self.trikotnr
     def get_groesse(self):
+        if self.groesse is None:
+            self.groesse = 0
         return self.groesse
     def get_marktwert(self):
         return self.marktwert
@@ -54,10 +68,16 @@ class Player():
     def get_vertragbis(self):
         return self.vertragbis
     def get_hauptpos(self):
+        if self.hauptpos is None:
+            self.hauptpos = '-'
         return self.hauptpos
     def get_nebenpos(self):
+        if self.nebenpos is None:
+            self.nebenpos = '-'
         return self.nebenpos
     def get_nebenpos2(self):
+        if self.nebenpos2 is None:
+            self.nebenpos2 = '-'
         return self.nebenpos2
     def get_technik(self):
         return self.technik
@@ -72,15 +92,16 @@ class Player():
             table = soup.find("div", {"class": "verletzungsbox"})
             table1 = table.find("div", {"class": "text"})
         except:
-            self.ausfall = False
+            self.ausfall = 0    #Spieler fällt aktuell nicht aus
+            self.ausfallbis = 0
         else:
             if "Dopingsperre" in table1.text:
                 match = re.search(r'\d{2}.\d{2}.\d{4}', table1.text)
                 datum = datetime.strptime(match.group(), '%d.%m.%Y').date()
-                self.ausfall = True
+                self.ausfall = 1    #Spieler fällt aus
                 self.ausfallbis = datum
             else:
-                self.ausfall = False    #andere Gründe müssen noch gefunden werden.
+                self.ausfall = 0    #andere Gründe müssen noch gefunden werden.
 
     def __search_name(self, soup):
         # Suche Vor- und Nachname

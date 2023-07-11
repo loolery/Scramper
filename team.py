@@ -6,7 +6,7 @@ class Verein():
     __tname, __transfermarktid = '', ''
     __turl, __tdatenurl = '', ''
     __teamcolor, __playerlinks = [], []
-    __ligarang, __stadionnamen, __gruendung = '', '', ''
+    __ligarang, __stadionnamen, __gruendung = None, '', ''
     __stadt, __transfermarktid = None, None
 
     def __init__(self, url):
@@ -52,7 +52,11 @@ class Verein():
         return self.__gruendung
 
     def get_teamcolor(self):
-        return self.__teamcolor
+        colors = ""
+        for tc in self.__teamcolor:
+            tc = str(tc)
+            colors += tc.replace("[", "").replace("]", "").replace("'", "")
+        return colors
 
     def get_playerlinks(self):
         return self.__playerlinks
@@ -68,9 +72,16 @@ class Verein():
         self.__transfermarktid = soup.find('div', {'class': 'row hide-on-print', 'id': 'subnavi'})['data-id']
 
     def __search_ligarang(self, soup):
-        table = soup.find("div", {"class": "data-header__box--big"})
-        table1 = table.find_all("span", {"class": "data-header__content"})
-        self.__ligarang = table1[1].text.strip()
+        try:
+            table = soup.find("div", {"class": "data-header__box--big"})
+            table1 = table.find_all("span", {"class": "data-header__content"})
+        except:
+            self.__ligarang = 0
+        else:
+            if table1[1].text.strip() == '':
+                self.__ligarang = 0
+            else:
+                self.__ligarang = table1[1].text.strip()
 
     def __search_playerlink(self, soup):
         self.__playerlinks = []
@@ -144,7 +155,9 @@ def search_teamlink(url):
 #     objVerein = Verein(t)
 #     verein.append(objVerein)
 #     print(f"Vereinsdaten von {objVerein.get_teamname()} sind geladen.")
+# print("\n")
 # for v in verein:
+#     print(' ======================================== \n')
 #     print(f'Team: {v.get_teamname()}')
 #     print(f'ID: {v.get_transfermarktid()}')
 #     print(f'Tabellenplatz: {v.get_ligarang()}')
@@ -155,4 +168,3 @@ def search_teamlink(url):
 #     playerlinks = v.get_playerlinks()
 #     for pl in playerlinks:
 #         print(f'   --> {pl}')
-#     print(' ======================================== \n')

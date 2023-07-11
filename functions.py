@@ -32,6 +32,12 @@ def soupobj(url):
             time.sleep(10)
     return soup
 
+def germanConvert(word):
+    word = word.replace("ä", "ae")
+    word = word.replace("ö", "oe")
+    word = word.replace("ü", "ue")
+    word = word.replace("ß", "ss")
+    return word
 def getLandId(landname):
     #Braucht als Parameter den Landnamen im String und gibt die in der SQLite gefundene
     #Id des Landes zurück!
