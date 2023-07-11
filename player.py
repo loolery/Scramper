@@ -174,9 +174,12 @@ class Player():
                     continue
                 else:
                     position.append(pos.text.strip())
-            self.hauptpos = position.pop(0)
-            if len(position) > 1: self.nebenpos = position.pop(1)
-            if len(position) > 2: self.nebenpos = position.pop(2)
+            if position:
+                self.hauptpos = position.pop(0)
+                if len(position) > 1: self.nebenpos = position.pop(1)
+                if len(position) > 2: self.nebenpos = position.pop(2)
+            else:
+                self.hauptpos = "Mittelfeld"
 
     def __search_allinbox(self, soup):
         # einlesen der kompletten Box auf der linken Seite und ausfiltern der benötigten Werte
@@ -283,26 +286,26 @@ class Player():
 # Für kuze tests bei umbauten an der Klasse!
 
 #s = Player('https://www.transfermarkt.de/mario-vuskovic/profil/spieler/432757')
-#s = Player('https://www.transfermarkt.de/isaac-matondo/profil/spieler/485964')
+s = Player('https://www.transfermarkt.de/lewis-leigh/profil/spieler/747367')
 # s = Player('https://www.transfermarkt.de/lee-brown/profil/spieler/120697')
-# print(s.get_firstname())
-# print(s.get_lastname())
-# print(s.get_trikotnr())
-# print(s.get_geburtstag())
-# print(s.get_fuss())
-# print(s.get_groesse())
-# print(func.getLandId(s.get_land()[0]))
-# print(s.get_land())
-# print(s.get_nationalspieler())
-# print(s.get_marktwert())
-# print(s.get_imteamseit())
-# print(s.get_vertragbis())
-# print(s.get_hauptpos())
-# print(s.get_nebenpos())
-# print(s.get_nebenpos2())
-# print(s.get_technik())
-# print(s.get_einsatz())
-# print(s.get_schnelligkeit())
-# print(s.get_ausfall())
-# print(s.get_ausfallbis())
+print(s.get_firstname())
+print(s.get_lastname())
+print(s.get_trikotnr())
+print(s.get_geburtstag())
+print(s.get_fuss())
+print(s.get_groesse())
+print(func.getLandId(s.get_land()[0]))
+print(s.get_land())
+print(s.get_nationalspieler())
+print(s.get_marktwert())
+print(s.get_imteamseit())
+print(s.get_vertragbis())
+print(s.get_hauptpos())
+print(s.get_nebenpos())
+print(s.get_nebenpos2())
+print(s.get_technik())
+print(s.get_einsatz())
+print(s.get_schnelligkeit())
+print(s.get_ausfall())
+print(s.get_ausfallbis())
 
