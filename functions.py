@@ -209,7 +209,7 @@ def landerinfo_suche():
                         dictionary[name] = [name_englisch, hauptstadt, fahne, einwohner]
     return dictionary.items()
 
-def ligen_suche():
+def laender_suche():
     # läd von Transfermarkt.de alle Länder mit Ligen in Europa
     # zurückgegeben wird der Name des Landes und deren Transfermarkt-ID
     soup = soupobj('https://www.transfermarkt.de/wettbewerbe/europa/wettbewerbe')
@@ -217,7 +217,8 @@ def ligen_suche():
     chars = "0123456789,#%&$"
     count = 0
     # Suche die Tabelle im Quelltext
-    try: table = soup.find("map", {"id": "europa_Map"})
+    try:
+        table = soup.find("map", {"id": "europa_Map"})
     except:
         result = None
         print(' ## Error - Map mit Ländern auf Transfermarkt wurde nicht gefunden!')

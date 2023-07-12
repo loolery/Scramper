@@ -74,6 +74,7 @@ sql.commit()
 print(f' --> {counter}x FIFA-Punktestände in Datenbank hinzugefügt!\n')
 
 #============= Erstellt tbl_stadt in DB ==========================================
+
 query = "CREATE TABLE IF NOT EXISTS 'tbl_stadt' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
         "Land_ID INTEGER REFERENCES tbl_land (ID) NOT NULL, " \
@@ -92,48 +93,65 @@ first = "INSERT INTO 'tbl_stadt' (ID, Land_ID, Name, Bundesland, Einwohner) VALU
 for url in staedte_urls:
     results = func.staedte_suche(url)
     if 'Deutschland' in url:
-        print('Deutschland')
+        print('Städte aus Deutschland geladen ...')
         landId =  1
     elif 'Vereinigten' in url:
-        print('Großbritanien')
+        print('Städte aus Großbritanien geladen ...')
         landId = 2
     elif 'Spanien' in url:
-        print('Spanien')
+        print('Städte aus Spanien geladen ...')
         landId = 3
     elif 'Frankreich' in url:
-        print('Frankreich')
+        print('Städte aus Frankreich geladen ...')
         landId = 4
     elif 'Italien' in url:
-        print('Italien')
+        print('Städte aus Italien geladen ...')
         landId = 5
     for di in results:
         counter += 1
         c_query = "(" + str(counter) + ", " + str(landId) + ", '" + str(func.germanConvert(di[0])) + "', '" + str(func.germanConvert(di[1][0])) + "', " + str(di[1][1]) + ");"
-        print(f'  {first}{c_query}')
+        #print(f'  {first}{c_query}')   #kontrollausgabe bei problemen mit dem erstellten SQL-Query
         query = first + c_query
         try:
             db_result = cursor.execute(query)
         except sqlite3.Error as er:
             print('SQLite error: %s' % (' '.join(er.args)))
             print("Exception class is: ", er.__class__)
-    print('\n')
+print('\n')
 sql.commit()
 
-#============= Erstellt tbl_liga in DB ==========================================
+#============= Erstellt tbl_ligen in DB ==========================================
+
+query = "CREATE TABLE IF NOT EXISTS 'tbl_ligen' " \
+        "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
+        "Land_ID INTEGER REFERENCES tbl_land (ID) NOT NULL, " \
+        "Name STRING(32) UNIQUE NOT NULL, " \
+        "Groesse INTEGER NOT NULL);"
+try:
+    db_result = cursor.execute(query)
+    print(' --> Datenbank mit Tabelle tbl_ligen wurde erstellt!')
+except sqlite3.Error as er:
+    print('SQLite error: %s' % (' '.join(er.args)))
+    print("Exception class is: ", er.__class__)
+sql.commit()
+
 #später für die automatische suche in der Europamap von Transfermarkt.de
-# result = func.ligen_suche()
-# print('--> Läd Ligen...')
-# for res in result:
-#     print(f' {res[0]} --> {res[1][0]}')
+
+l_queryhead = "INSERT INTO tbl_vereine (ID, Land_ID, Name, Groesse) \n VALUES "
+result = func.laender_suche()
+print('--> Läd Ligen...')
+for res in result:
+    print(f' {res[0]} --> {res[1][0]}')
 
 #============= Erstellt tbl_vereine & tbl_personen in DB =======================================
+
 query = "CREATE TABLE IF NOT EXISTS 'tbl_vereine' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
         "Stadt_ID INTEGER REFERENCES tbl_stadt (ID) NOT NULL, " \
         "liga_ID INTEGER REFERENCES tbl_liga (ID) NOT NULL, " \
         "Name STRING(32) UNIQUE NOT NULL, " \
         "Tabellenplatz INTEGER NOT NULL, " \
-        "Gruendung DATE NOT NULL, " \
+        "Gruendung STRING(10) NOT NULL, " \
         "Vereinsfarben STRING (32) NOT NULL, " \
         "Stadion STRING NOT NULL, " \
         "Transfermarkt_Id INTEGER NOT NULL, " \
@@ -152,18 +170,18 @@ query = "CREATE TABLE IF NOT EXISTS 'tbl_personen' " \
         "TrikotNr INTEGER NOT NULL, " \
         "Vorname STRING(32) NOT NULL, " \
         "Nachname STRING(32) NOT NULL, " \
-        "Geburtsdatum DATE NOT NULL, " \
+        "Geburtsdatum STRING(10) NOT NULL, " \
         "Groesse INTEGER NOT NULL, " \
         "Fuss INTEGER NOT NULL, " \
         "Position INTEGER NOT NULL, " \
         "Position2 INTEGER NOT NULL, " \
         "Position3 INTEGER NOT NULL, " \
         "Nationalspieler BOOLEAN NOT NULL, " \
-        "VertragVon DATE NOT NULL, " \
-        "VertragBis DATE NOT NULL, " \
+        "VertragVon STRING(10) NOT NULL, " \
+        "VertragBis STRING(10) NOT NULL, " \
         "Marktwert INTEGER NOT NULL, " \
         "Ausfall BOOLEAN NOT NULL, " \
-        "AusfallBis DATE NOT NULL, " \
+        "AusfallBis STRING(10) NOT NULL, " \
         "Technik INTEGER NOT NULL, " \
         "Einsatz INTEGER NOT NULL, " \
         "Schnelligkeit INTEGER NOT NULL, " \
@@ -177,6 +195,7 @@ except sqlite3.Error as er:
 sql.commit()
 
 #============= tbl_vereine wird mit Daten gefüllt =======================================
+
 t_queryhead = "INSERT INTO tbl_vereine (ID, Stadt_ID, Liga_ID, Name, Tabellenplatz, Gruendung, Vereinsfarben, Stadion, Transfermarkt_Id, Geld) \n VALUES "
 p_queryhead = "INSERT INTO tbl_personen (ID,Land_ID,Verein_ID,TrikotNr,Vorname,Nachname,Geburtsdatum,Groesse,Fuss,Position,Position2,Position3,Nationalspieler,VertragVon,VertragBis,Marktwert,Ausfall,AusfallBis,Technik,Einsatz,Schnelligkeit,Fitness) \n VALUES "
 playerdatensql = open('playerdaten.sql', 'w', encoding="utf-8")  # öffnet die datei in dem die query´s gespeichert werden
@@ -199,7 +218,7 @@ for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofile
         # Reihenfolge:  ID, Stadt_ID, Liga_ID, Vereinsname, Tabellenplatz, Gründungsdatum, Vereinsfarben,
         #               Stadionname, Transfermarkt_ID, Vereinsbudge,
         t_querystring = "(" + str(t_count) + ", " + str(v.get_stadtid()) + ", " + str(dbr[0]) + ", '" + str(func.germanConvert(v.get_teamname()))
-        t_querystring += "', " + str(v.get_ligarang()) + ", " + str(v.get_gruendung()) + ", '" + str(v.get_teamcolor())
+        t_querystring += "', " + str(v.get_ligarang()) + ", '" + str(v.get_gruendung()) + "', '" + str(v.get_teamcolor())
         t_querystring += "', '" + str(v.get_stadionname()) + "', " + str(v.get_transfermarktid()) + ", 100);"
         try:
             tquery = t_queryhead + t_querystring
@@ -224,12 +243,12 @@ for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofile
             #               Position, Nebenposition, Nebenposition2, Nationalspieler, VertragVon,
             #               VertragBis, Marktwert, Ausfall, AusfallBis Technik, Einsatz, Schnelligkeit, Fitness
             p_querystring = "(" + str(count) + ", " + str(func.getLandId(objS.get_land()[0])) + ", " + str(t_count) + ", "
-            p_querystring += str(objS.get_trikotnr()) + ", '" + str(objS.get_firstname()) + "', '" + str(objS.get_lastname()) + "', " + str(objS.get_geburtstag())
-            p_querystring += ", " + str(objS.get_groesse()) + ", " + str(func.convertFuss(objS.get_fuss())) + ", " + str(func.convertPosition(objS.get_hauptpos()))
+            p_querystring += str(objS.get_trikotnr()) + ", '" + str(objS.get_firstname()) + "', '" + str(objS.get_lastname()) + "', '" + str(objS.get_geburtstag())
+            p_querystring += "', " + str(objS.get_groesse()) + ", " + str(func.convertFuss(objS.get_fuss())) + ", " + str(func.convertPosition(objS.get_hauptpos()))
             p_querystring += ", " + str(func.convertPosition(objS.get_nebenpos())) + ", " + str(func.convertPosition(objS.get_nebenpos2()))
-            p_querystring += ", " + str(objS.get_nationalspieler()) + ", " + str(objS.get_imteamseit()) + ", " + str(objS.get_vertragbis()) + ", " + str(objS.get_marktwert())
-            p_querystring += ", " + str(objS.get_ausfall()) + ", " + str(objS.get_ausfallbis())    #Dopingsperre
-            p_querystring += ", " + str(objS.get_technik()) + ", " + str(objS.get_einsatz()) + ", " + str(objS.get_schnelligkeit()) + ", 100);"
+            p_querystring += ", " + str(objS.get_nationalspieler()) + ", '" + str(objS.get_imteamseit()) + "', '" + str(objS.get_vertragbis()) + "', " + str(objS.get_marktwert())
+            p_querystring += ", " + str(objS.get_ausfall()) + ", '" + str(objS.get_ausfallbis())    #Dopingsperre
+            p_querystring += "', " + str(objS.get_technik()) + ", " + str(objS.get_einsatz()) + ", " + str(objS.get_schnelligkeit()) + ", 100);"
             playerdatensql.write(p_querystring + '\n')    #Ausgabe in .sql file
             try:
                 pquery = p_queryhead + p_querystring
