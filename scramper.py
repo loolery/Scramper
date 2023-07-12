@@ -13,13 +13,14 @@ start = time.time()     #zum messen der Performence
 today = date.today()    #damit die Url auf die aktuelle Mannschaft von diesem Jahr zeigt
 count = 0               #für die ID der sqlite zeile
 t_count = 0
+db_name = 'new_database.db3'    #SQLite DB zum schreiben
+sql2 = sqlite3.connect('database.db3')   #SQLite DB zum lesen
 
 # Städtelisten D, GB, ES, I, FR
 staedte_urls = ('https://de.wikipedia.org/wiki/Liste_der_Gro%C3%9F-_und_Mittelst%C3%A4dte_in_Deutschland', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_im_Vereinigten_K%C3%B6nigreich', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Spanien', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Italien', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Frankreich', )
 
 #============= Erstellt DB mit tbl_land  =============================================================
 
-db_name = 'new_database.db3'
 counter = 0
 if os.path.isfile(db_name):
     os.remove(db_name)
@@ -30,10 +31,11 @@ query = "CREATE TABLE IF NOT EXISTS 'tbl_land' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
         "Name STRING(32) UNIQUE NOT NULL, " \
         "Name2 STRING(32) UNIQUE NOT NULL, " \
-        "Einwohner DOUBLE NOT NULL, "\
+        "Einwohner DOUBLE(12) NOT NULL, "\
         "Hauptstadt STRING(32) UNIQUE NOT NULL, " \
         "Fahne STRING(128) UNIQUE, " \
-        "Punkte INTEGER(6) NOT NULL);"
+        "FifaPunkte INTEGER(6) NOT NULL, " \
+        "Tm_Id STRING(4) UNIQUE);"
 try:
     db_result = cursor.execute(query)
     print(' --> Neue Datenbank mit Tabelle tbl_land wurde erstellt!')
@@ -41,7 +43,7 @@ except sqlite3.Error as er:
     print('SQLite error: %s' % (' '.join(er.args)))
     print("Exception class is: ", er.__class__)
 
-first = "INSERT INTO 'tbl_land' (Name, Name2, Einwohner, Hauptstadt, Fahne, Punkte) VALUES "
+first = "INSERT INTO 'tbl_land' (Name, Name2, Einwohner, Hauptstadt, Fahne, FifaPunkte) VALUES "
 laender = func.landerinfo_suche()
 test = func.search_fifa()
 for te in test:
@@ -60,7 +62,7 @@ print(f' --> {counter} Länder in Datenbank eingetragen!')
 
 counter = 0
 query = ""
-first = "UPDATE 'tbl_land' SET Punkte = "
+first = "UPDATE 'tbl_land' SET FifaPunkte = "
 next = " WHERE Name LIKE '%"
 for te in test:
     query = first + te[1][0] + next + te[0] + "%';"
@@ -71,16 +73,49 @@ for te in test:
         print('SQLite error: %s' % (' '.join(er.args)))
         print("Exception class is: ", er.__class__)
 sql.commit()
-print(f' --> {counter}x FIFA-Punktestände in Datenbank hinzugefügt!\n')
+print(f' --> {counter}x FIFA-Punktestände in Länder Tabelle hinzugefügt!\n')
+
+#============= Erstellt tbl_ligen in DB ==========================================
+
+query = "CREATE TABLE IF NOT EXISTS 'tbl_ligen' " \
+        "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
+        "Land_ID INTEGER(3) REFERENCES tbl_land (ID) NOT NULL, " \
+        "Name STRING(32) UNIQUE NOT NULL, " \
+        "Groesse INTEGER(3) NOT NULL);"
+try:
+    db_result = cursor.execute(query)
+    print(' --> Datenbank mit Tabelle tbl_ligen wurde erstellt!')
+except sqlite3.Error as er:
+    print('SQLite error: %s' % (' '.join(er.args)))
+    print("Exception class is: ", er.__class__)
+sql.commit()
+
+l_queryhead = "INSERT INTO tbl_vereine (ID, Land_ID, Name, Groesse) \n VALUES "
+result = func.laender_suche()
+counter = 0
+query = ""
+first = "UPDATE 'tbl_land' SET Tm_Id = "
+next = " WHERE Name LIKE '%"
+for res in result:
+    query = first + "'" + res[1][0] + "'" + next + res[0] + "%';"
+    try:
+        db_result = cursor.execute(query)
+        if db_result: counter += 1
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+        print("Exception class is: ", er.__class__)
+    else:
+        sql.commit()
+print(f' --> {counter}x Transfermarkt.de Liga ID´s in Länder Tabelle hinzugefügt!\n')
 
 #============= Erstellt tbl_stadt in DB ==========================================
 
 query = "CREATE TABLE IF NOT EXISTS 'tbl_stadt' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
-        "Land_ID INTEGER REFERENCES tbl_land (ID) NOT NULL, " \
+        "Land_ID INTEGER(4) REFERENCES tbl_land (ID) NOT NULL, " \
         "Name STRING(32) UNIQUE NOT NULL, " \
         "Bundesland STRING (32) NOT NULL, " \
-        "Einwohner DOUBLE NOT NULL);"
+        "Einwohner DOUBLE(10) NOT NULL);"
 try:
     db_result = cursor.execute(query)
     print(' --> Datenbank mit Tabelle tbl_stadt wurde erstellt!')
@@ -120,42 +155,19 @@ for url in staedte_urls:
 print('\n')
 sql.commit()
 
-#============= Erstellt tbl_ligen in DB ==========================================
-
-query = "CREATE TABLE IF NOT EXISTS 'tbl_ligen' " \
-        "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
-        "Land_ID INTEGER REFERENCES tbl_land (ID) NOT NULL, " \
-        "Name STRING(32) UNIQUE NOT NULL, " \
-        "Groesse INTEGER NOT NULL);"
-try:
-    db_result = cursor.execute(query)
-    print(' --> Datenbank mit Tabelle tbl_ligen wurde erstellt!')
-except sqlite3.Error as er:
-    print('SQLite error: %s' % (' '.join(er.args)))
-    print("Exception class is: ", er.__class__)
-sql.commit()
-
-#später für die automatische suche in der Europamap von Transfermarkt.de
-
-l_queryhead = "INSERT INTO tbl_vereine (ID, Land_ID, Name, Groesse) \n VALUES "
-result = func.laender_suche()
-print('--> Läd Ligen...')
-for res in result:
-    print(f' {res[0]} --> {res[1][0]}')
-
 #============= Erstellt tbl_vereine & tbl_personen in DB =======================================
 
 query = "CREATE TABLE IF NOT EXISTS 'tbl_vereine' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
-        "Stadt_ID INTEGER REFERENCES tbl_stadt (ID) NOT NULL, " \
-        "liga_ID INTEGER REFERENCES tbl_liga (ID) NOT NULL, " \
+        "Stadt_ID INTEGER(6) REFERENCES tbl_stadt (ID) NOT NULL, " \
+        "liga_ID INTEGER(4) REFERENCES tbl_liga (ID) NOT NULL, " \
         "Name STRING(32) UNIQUE NOT NULL, " \
-        "Tabellenplatz INTEGER NOT NULL, " \
+        "Tabellenplatz INTEGER(2) NOT NULL, " \
         "Gruendung STRING(10) NOT NULL, " \
         "Vereinsfarben STRING (32) NOT NULL, " \
-        "Stadion STRING NOT NULL, " \
-        "Transfermarkt_Id INTEGER NOT NULL, " \
-        "Geld INTEGER NOT NULL);"
+        "Stadion STRING(32) NOT NULL, " \
+        "Transfermarkt_Id STRING(5) NOT NULL, " \
+        "Geld INTEGER(12) NOT NULL);"
 try:
     db_result = cursor.execute(query)
     print(' --> Datenbank mit Tabelle tbl_vereine wurde erstellt!')
@@ -165,27 +177,27 @@ except sqlite3.Error as er:
 sql.commit()
 query = "CREATE TABLE IF NOT EXISTS 'tbl_personen' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
-        "Land_ID INTEGER REFERENCES tbl_land (ID) NOT NULL, " \
-        "Verein_ID INTEGER REFERENCES tbl_vereine (ID) NOT NULL, " \
-        "TrikotNr INTEGER NOT NULL, " \
+        "Land_ID INTEGER(3) REFERENCES tbl_land (ID) NOT NULL, " \
+        "Verein_ID INTEGER(5) REFERENCES tbl_vereine (ID) NOT NULL, " \
+        "TrikotNr INTEGER(3) NOT NULL, " \
         "Vorname STRING(32) NOT NULL, " \
         "Nachname STRING(32) NOT NULL, " \
         "Geburtsdatum STRING(10) NOT NULL, " \
-        "Groesse INTEGER NOT NULL, " \
-        "Fuss INTEGER NOT NULL, " \
-        "Position INTEGER NOT NULL, " \
-        "Position2 INTEGER NOT NULL, " \
-        "Position3 INTEGER NOT NULL, " \
+        "Groesse INTEGER(3) NOT NULL, " \
+        "Fuss INTEGER(1) NOT NULL, " \
+        "Position INTEGER(1) NOT NULL, " \
+        "Position2 INTEGER(1) NOT NULL, " \
+        "Position3 INTEGER(1) NOT NULL, " \
         "Nationalspieler BOOLEAN NOT NULL, " \
         "VertragVon STRING(10) NOT NULL, " \
         "VertragBis STRING(10) NOT NULL, " \
-        "Marktwert INTEGER NOT NULL, " \
+        "Marktwert INTEGER(12) NOT NULL, " \
         "Ausfall BOOLEAN NOT NULL, " \
         "AusfallBis STRING(10) NOT NULL, " \
-        "Technik INTEGER NOT NULL, " \
-        "Einsatz INTEGER NOT NULL, " \
-        "Schnelligkeit INTEGER NOT NULL, " \
-        "Fitness INTEGER NOT NULL);"
+        "Technik INTEGER(3) NOT NULL, " \
+        "Einsatz INTEGER(3) NOT NULL, " \
+        "Schnelligkeit INTEGER(3) NOT NULL, " \
+        "Fitness INTEGER(3) NOT NULL);"
 try:
     db_result = cursor.execute(query)
     print(' --> Datenbank mit Tabelle tbl_personen wurde erstellt!')
@@ -201,7 +213,6 @@ p_queryhead = "INSERT INTO tbl_personen (ID,Land_ID,Verein_ID,TrikotNr,Vorname,N
 playerdatensql = open('playerdaten.sql', 'w', encoding="utf-8")  # öffnet die datei in dem die query´s gespeichert werden
 playerdatensql.write(p_queryhead + '\n')  # schreibt den sqlheader in die Datei
 
-sql2 = sqlite3.connect('database.db3')   #öffnet eine sqlite-db zum auslesen
 cursor2 = sql2.cursor()
 query = "SELECT ID, Name, Transfermarkt_Id FROM tbl_liga ORDER BY ID"
 db_result = cursor2.execute(query)
