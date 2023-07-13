@@ -81,7 +81,8 @@ query = "CREATE TABLE IF NOT EXISTS 'tbl_ligen' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
         "Land_ID INTEGER(3) REFERENCES tbl_land (ID) NOT NULL, " \
         "Name STRING(32) UNIQUE NOT NULL, " \
-        "Groesse INTEGER(3) NOT NULL);"
+        "Groesse INTEGER(3) NOT NULL, " \
+        "Tm_Id STRING(4) UNIQUE);"
 try:
     db_result = cursor.execute(query)
     print(' --> Datenbank mit Tabelle tbl_ligen wurde erstellt!')
@@ -90,14 +91,13 @@ except sqlite3.Error as er:
     print("Exception class is: ", er.__class__)
 sql.commit()
 
-l_queryhead = "INSERT INTO tbl_vereine (ID, Land_ID, Name, Groesse) \n VALUES "
-result = func.laender_suche()
+land_result = func.laender_suche()
 counter = 0
 query = ""
 first = "UPDATE 'tbl_land' SET Tm_Id = "
 next = " WHERE Name LIKE '%"
-for res in result:
-    query = first + "'" + res[1][0] + "'" + next + res[0] + "%';"
+for land in land_result:
+    query = first + "'" + land[1][0] + "'" + next + land[0] + "%';"
     try:
         db_result = cursor.execute(query)
         if db_result: counter += 1
@@ -106,7 +106,15 @@ for res in result:
         print("Exception class is: ", er.__class__)
     else:
         sql.commit()
+        
+        #Land nach Liegen durch suchen und Tm_Id´s in tbl_ligen hinzufügen
+        result = func.ligen_suche('40')
+        for res in result:
+            print(f'{res[0]} -> {res[1][0]} -> {res[1][1]}')
+        print('\n')
+        
 print(f' --> {counter}x Transfermarkt.de Liga ID´s in Länder Tabelle hinzugefügt!\n')
+
 
 #============= Erstellt tbl_stadt in DB ==========================================
 

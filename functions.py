@@ -224,8 +224,39 @@ def laender_suche():
         print(' ## Error - Map mit Ländern auf Transfermarkt wurde nicht gefunden!')
     else:
         for row in table.find_all("area"):
-            count += 1
-            name = row.get('title', None).strip()
-            id = row.get('href', None).split('/')[4].strip()
-            dictionary[name] = [id]
+            if row.get('href', None).split('/')[4].strip().isnumeric():
+                count += 1
+                name = row.get('title', None).strip()
+                id = row.get('href', None).split('/')[4].strip()
+                dictionary[name] = [id]
+    return dictionary.items()
+
+def ligen_suche(id):
+    # Sucht bei Transfermarkt.de nach den ID´s der einzelnen Ligen eines Landes und gibt diese zurück.
+    dictionary = {}
+    count, count2 = 0, 0
+    img, href = [], []
+    soup = soupobj('https://www.transfermarkt.de/wettbewerbe/national/wettbewerbe/' + id)
+    try:
+        table = soup.find("table", {"class": "items"})
+        for link in table.find_all("img", {"class": "continental-league-emblem"}):
+            img.append(link.get('src', None))
+        for link2 in table.find_all("a"):
+            href.append(link2.get('href', None))
+    except:
+        print('  -> cancel')
+    else:
+        try:
+            for tab in soup.find_all("td", {"class": "extrarow bg_blau_20 hauptlink"}):
+                if '.Liga' in tab.text:
+                    if count >=1 and tab.text == '1.Liga' or count >= 3: break # schützt vor wiederholungen und reduziert auf max. 3 Ligen.
+                    name = tab.text
+                    url = href[count2 + 1]
+                    picture = img[count]
+                    dictionary[name] = [url, picture]
+                count+=1
+                count2+=2
+        except:
+            print('break')
+    print('\n')
     return dictionary.items()
