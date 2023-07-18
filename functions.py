@@ -1,4 +1,5 @@
 import sqlite3
+import re
 import requests
 import requests_cache
 from bs4 import BeautifulSoup
@@ -28,8 +29,10 @@ def soupobj(url):
             soup = BeautifulSoup(html, "lxml")
             break
         except:
-            print(f" Connection failed! Next try in 10 seconds... {url}")
-            time.sleep(10)
+            print(f" Connection failed! New try...(y/n)? {url}")
+            choice = input()
+            if choice == 'n': return False
+            time.sleep(1)
     return soup
 
 def germanConvert(word):
@@ -38,14 +41,12 @@ def germanConvert(word):
     word = word.replace("ü", "ue")
     word = word.replace("ß", "ss")
     return word
-def getLandId(landname):
-    #Braucht als Parameter den Landnamen im String und gibt die in der SQLite gefundene
+def getLandId(cursor, landname):
+    #Braucht als Parameter den SQL-Cursor & Landnamen als String und gibt die in der SQLite gefundene
     #Id des Landes zurück!
     landid = 200 # Id für unbekannte
     if landname is None:
         landname = 'unbekanntesLand'
-    sql = sqlite3.connect('database.db3')
-    cursor = sql.cursor()
     query = "SELECT ID FROM tbl_land WHERE Name LIKE '%" + landname + "%' LIMIT 1"
     try:
         result = cursor.execute(query)
@@ -232,31 +233,47 @@ def laender_suche():
     return dictionary.items()
 
 def ligen_suche(id):
-    # Sucht bei Transfermarkt.de nach den ID´s der einzelnen Ligen eines Landes und gibt diese zurück.
+    # Sucht bei Transfermarkt.de nach den ID´s(String) der einzelnen Ligen eines Landes und gibt diese zurück.
+    # Rückgabe erfolg im tuple:
+    # Rang der Liga --> Landname, Name der Liga, Transfermarkt.de Url zur Liga, Url des Wappens der Liga
     dictionary = {}
     count, count2 = 0, 0
-    img, href = [], []
+    img, href, title, groesse, land = [], [], [], [], ''
     soup = soupobj('https://www.transfermarkt.de/wettbewerbe/national/wettbewerbe/' + id)
     try:
+        #Sucht nach Ligadaten
+        #Sucht nach Ligadaten
         table = soup.find("table", {"class": "items"})
         for link in table.find_all("img", {"class": "continental-league-emblem"}):
             img.append(link.get('src', None))
         for link2 in table.find_all("a"):
-            href.append(link2.get('href', None))
-    except:
-        print('  -> cancel')
+            if not '/forum/' in link2.get('href', None):
+                href.append(link2.get('href', None))
+                title.append(link2.get('title', None))
+    except Exception as error:
+        print('break: ', error)
     else:
         try:
             for tab in soup.find_all("td", {"class": "extrarow bg_blau_20 hauptlink"}):
                 if '.Liga' in tab.text:
-                    if count >=1 and tab.text == '1.Liga' or count >= 3: break # schützt vor wiederholungen und reduziert auf max. 3 Ligen.
-                    name = tab.text
+                    # schützt vor wiederholungen und reduziert auf max. 3 Ligen.
+                    if count >=1 and tab.text == '1.Liga' or count >= 3: break
+                    rang = tab.text
+                    name = title[count2 + 1]
                     url = href[count2 + 1]
                     picture = img[count]
-                    dictionary[name] = [url, picture]
+                    soup2 = soupobj('https://www.transfermarkt.de' + url)
+                    for infobox in soup2.find_all("div", {"class": "data-header__info-box"}):
+                        groesse = [int(num) for num in re.findall(r'\d+', infobox.find("li", {"class": "data-header__label"}).text)]
+                    for clubinfo in soup2.find_all("div", {"class": "data-header__club-info"}):
+                        land = clubinfo.find("span", {"class": "data-header__club"}).text.strip()
+                    dictionary[rang] = [germanConvert(land), name, groesse, url, picture]
                 count+=1
                 count2+=2
-        except:
-            print('break')
+        except Exception as error:
+            print('break2: ', error)
     print('\n')
     return dictionary.items()
+# search = ligen_suche('99')
+# for se in search:
+#     print(se)

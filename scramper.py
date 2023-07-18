@@ -80,9 +80,11 @@ print(f' --> {counter}x FIFA-Punktestände in Länder Tabelle hinzugefügt!\n')
 query = "CREATE TABLE IF NOT EXISTS 'tbl_ligen' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
         "Land_ID INTEGER(3) REFERENCES tbl_land (ID) NOT NULL, " \
-        "Name STRING(32) UNIQUE NOT NULL, " \
+        "Rang INTEGER(2) NOT NULL, " \
+        "Name STRING(32) NOT NULL, " \
         "Groesse INTEGER(3) NOT NULL, " \
-        "Tm_Id STRING(4) UNIQUE);"
+        "BildURL STRING(90), " \
+        "Tm_Link STRING(90) UNIQUE);"
 try:
     db_result = cursor.execute(query)
     print(' --> Datenbank mit Tabelle tbl_ligen wurde erstellt!')
@@ -106,11 +108,20 @@ for land in land_result:
         print("Exception class is: ", er.__class__)
     else:
         sql.commit()
-        
+        queryhead = "INSERT INTO tbl_ligen (Land_ID, Rang, Name, Groesse, BildURL, Tm_Link) \n VALUES "
         #Land nach Liegen durch suchen und Tm_Id´s in tbl_ligen hinzufügen
-        result = func.ligen_suche('40')
+        result = func.ligen_suche(land[1][0])
         for res in result:
-            print(f'{res[0]} -> {res[1][0]} -> {res[1][1]}')
+            space = res[1][2]
+            liganame = res[1][1].replace("'", "''")
+            print(f'{func.getLandId(cursor, res[1][0])} -> {res[1][1]} -> {space[0]} -> {res[1][4]} -> {res[1][3]}')
+            query = f"({func.getLandId(cursor, res[1][0])}, {res[0].split('.')[0]}, '{liganame}', {space[0]}, '{res[1][4]}', '{res[1][3]}');"
+            try:
+                db_result = cursor.execute(queryhead + query)
+                if db_result: counter += 1
+            except sqlite3.Error as er:
+                print('SQLite error: %s' % (' '.join(er.args)))
+                print("Exception class is: ", er.__class__)
         print('\n')
         
 print(f' --> {counter}x Transfermarkt.de Liga ID´s in Länder Tabelle hinzugefügt!\n')
@@ -221,9 +232,9 @@ p_queryhead = "INSERT INTO tbl_personen (ID,Land_ID,Verein_ID,TrikotNr,Vorname,N
 playerdatensql = open('playerdaten.sql', 'w', encoding="utf-8")  # öffnet die datei in dem die query´s gespeichert werden
 playerdatensql.write(p_queryhead + '\n')  # schreibt den sqlheader in die Datei
 
-cursor2 = sql2.cursor()
-query = "SELECT ID, Name, Transfermarkt_Id FROM tbl_liga ORDER BY ID"
-db_result = cursor2.execute(query)
+#cursor2 = sql2.cursor()
+query = "SELECT ID, Name, Tm_Link FROM tbl_ligen ORDER BY Land_ID"
+db_result = cursor.execute(query)
 for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofilen
     listTeams, listVereine = [], []
     listTeams = func.search_teamlinks(f"https://www.transfermarkt.de/{dbr[1].replace(' ', '-').replace('.', '').lower()}/startseite/wettbewerb/{dbr[2]}")
@@ -261,7 +272,7 @@ for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofile
             # Reihenfolge:  ID, Land_ID, Verein_ID, TrikotNr, Vorname, Nachname, Geburtsdatum, Groesse, Fuss,
             #               Position, Nebenposition, Nebenposition2, Nationalspieler, VertragVon,
             #               VertragBis, Marktwert, Ausfall, AusfallBis Technik, Einsatz, Schnelligkeit, Fitness
-            p_querystring = "(" + str(count) + ", " + str(func.getLandId(objS.get_land()[0])) + ", " + str(t_count) + ", "
+            p_querystring = "(" + str(count) + ", " + str(func.getLandId(cursor, objS.get_land()[0])) + ", " + str(t_count) + ", "
             p_querystring += str(objS.get_trikotnr()) + ", '" + str(objS.get_firstname()) + "', '" + str(objS.get_lastname()) + "', '" + str(objS.get_geburtstag())
             p_querystring += "', " + str(objS.get_groesse()) + ", " + str(func.convertFuss(objS.get_fuss())) + ", " + str(func.convertPosition(objS.get_hauptpos()))
             p_querystring += ", " + str(func.convertPosition(objS.get_nebenpos())) + ", " + str(func.convertPosition(objS.get_nebenpos2()))
