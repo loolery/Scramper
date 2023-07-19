@@ -108,16 +108,16 @@ for land in land_result:
         print("Exception class is: ", er.__class__)
     else:
         sql.commit()
-        queryhead = "INSERT INTO tbl_ligen (Land_ID, Rang, Name, Groesse, BildURL, Tm_Link) \n VALUES "
+        queryhead = "INSERT INTO tbl_ligen (Land_ID, Rang, Name, Groesse, BildURL, Tm_Link) \n VALUES (?, ?, ?, ?, ?, ?)"
         #Land nach Liegen durch suchen und Tm_Id´s in tbl_ligen hinzufügen
         result = func.ligen_suche(land[1][0])
         for res in result:
             space = res[1][2]
             liganame = res[1][1].replace("'", "''")
             print(f'{func.getLandId(cursor, res[1][0])} -> {res[1][1]} -> {space[0]} -> {res[1][4]} -> {res[1][3]}')
-            query = f"({func.getLandId(cursor, res[1][0])}, {res[0].split('.')[0]}, '{liganame}', {space[0]}, '{res[1][4]}', '{res[1][3]}');"
+            #query = f"({func.getLandId(cursor, res[1][0])}, {res[0].split('.')[0]}, '{liganame}', {space[0]}, '{res[1][4]}', '{res[1][3]}');"
             try:
-                db_result = cursor.execute(queryhead + query)
+                db_result = cursor.execute(queryhead, (func.getLandId(cursor, res[1][0]), res[0].split('.')[0], liganame, space[0], res[1][4], res[1][3]))
                 if db_result: counter += 1
             except sqlite3.Error as er:
                 print('SQLite error: %s' % (' '.join(er.args)))
@@ -237,8 +237,8 @@ query = "SELECT ID, Name, Tm_Link FROM tbl_ligen ORDER BY Land_ID"
 db_result = cursor.execute(query)
 for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofilen
     listTeams, listVereine = [], []
-    listTeams = func.search_teamlinks(f"https://www.transfermarkt.de/{dbr[1].replace(' ', '-').replace('.', '').lower()}/startseite/wettbewerb/{dbr[2]}")
-    print(f"\n{dbr[2]} - https://www.transfermarkt.de/{dbr[1].replace(' ', '-').lower()}/startseite/wettbewerb/{dbr[2]}")
+    listTeams = func.search_teamlinks(f"https://www.transfermarkt.de{dbr[2]}")
+    print(f"\n{dbr[2]} - https://www.transfermarkt.de{dbr[2]}")
     for team in listTeams:     #Schleife zum erstellen der einzelnen Objecte für die Vereine
         listVereine.append(vereine.Verein(team))  # Vereine werden aus der Klasse erstellt und einer Liste hinzugefügt
         print(f" Vereinsdaten von {listVereine[-1].get_teamname()} werden geladen...")   #Kontroll Ausgabe der erstellten Vereinsobjecte.

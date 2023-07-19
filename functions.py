@@ -193,10 +193,19 @@ def landerinfo_suche():
             count += 1
             if count >= 5:
                 try: name_col = row.find("a", title=True)
-                except: print(f' ERROR...')
+                except Exception as error: print(f' ERROR...: {error}')
                 else:
                     if name_col is not None:
                         name = name_col.text.strip()
+                        if 'Vereinigtes Königreich' in name:
+                            print(f'https://de.wikipedia.org{name_col.get("href", None)}')
+                            soup2 = soupobj('')
+                            try:
+                                tableuk = soup2.find("table", {"class": "wikitable sortable mw-collapsible zebra jquery-tablesorter mw-made-collapsible"})
+                                for result in tableuk.find_all("a"):
+                                    print(result[c].get("title", None))
+
+
                     data_cols = row.find_all("td")
                     try: name_englisch = data_cols[-2].text.strip().replace('.', '')
                     except: continue
@@ -209,6 +218,7 @@ def landerinfo_suche():
                             hauptstadt = hstadt.replace(char, "").split('[')[0].split('(')[0]
                         dictionary[name] = [name_englisch, hauptstadt, fahne, einwohner]
     return dictionary.items()
+result = landerinfo_suche()
 
 def laender_suche():
     # läd von Transfermarkt.de alle Länder mit Ligen in Europa
