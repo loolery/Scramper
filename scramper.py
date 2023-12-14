@@ -236,9 +236,9 @@ playerdatensql.write(p_queryhead + '\n')  # schreibt den sqlheader in die Datei
 query = "SELECT ID, Name, Tm_Link FROM tbl_ligen ORDER BY Land_ID"
 db_result = cursor.execute(query)
 
-print(f"   -->  {db_result.fetchone()[0]}") #Anzahl der elemente in db_result (sind aktuell 28)
-
-for dbr in db_result:   #Schleife startet den durchlauf der Ligen aus der SQL-Abfrage (db_result)
+listLigen = []
+listLigen = [list(row) for row in db_result]
+for dbr in listLigen:   #Schleife startet den durchlauf der Ligen aus der SQL-Abfrage (db_result)
     print(f"\n*Start --> {dbr[0]} - {dbr[1]} - https://www.transfermarkt.de{dbr[2]}")
     listTeams, listVereine = [], []
     listTeams = func.search_teamlinks(f"https://www.transfermarkt.de{dbr[2]}") #Gibt eine Liste der Vereine in der Liga zurück
