@@ -236,11 +236,13 @@ playerdatensql.write(p_queryhead + '\n')  # schreibt den sqlheader in die Datei
 query = "SELECT ID, Name, Tm_Link FROM tbl_ligen ORDER BY Land_ID"
 db_result = cursor.execute(query)
 
-for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofilen
+print(f"   -->  {db_result.fetchone()[0]}") #Anzahl der elemente in db_result (sind aktuell 28)
+
+for dbr in db_result:   #Schleife startet den durchlauf der Ligen aus der SQL-Abfrage (db_result)
     print(f"\n*Start --> {dbr[0]} - {dbr[1]} - https://www.transfermarkt.de{dbr[2]}")
     listTeams, listVereine = [], []
-    listTeams = func.search_teamlinks(f"https://www.transfermarkt.de{dbr[2]}")
-    for team in listTeams:     #Schleife zum erstellen der einzelnen Objecte für die Vereine
+    listTeams = func.search_teamlinks(f"https://www.transfermarkt.de{dbr[2]}") #Gibt eine Liste der Vereine in der Liga zurück
+    for team in listTeams:     #Schleife zum erstellen der einzelnen Objecte für die Vereine der Liga
         listVereine.append(vereine.Verein(team))  # Vereine werden aus der Klasse erstellt und einer Liste hinzugefügt
         print(f" Vereinsdaten von {listVereine[-1].get_teamname()} werden geladen...")   #Kontroll Ausgabe der erstellten Vereinsobjecte.
     for v in listVereine:   #Schleife durch läuft die einzelnen Vereine der Liste'
