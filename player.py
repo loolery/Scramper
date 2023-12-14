@@ -96,10 +96,14 @@ class Player():
             self.ausfallbis = 0
         else:
             if "Dopingsperre" in table1.text:
-                match = re.search(r'\d{2}.\d{2}.\d{4}', table1.text)
-                datum = datetime.strptime(match.group(), '%d.%m.%Y').date()
-                self.ausfall = 1    #Spieler fällt aus
-                self.ausfallbis = datum
+                self.ausfall = 1  # Spieler fällt aus
+                try:
+                    match = re.search(r'\d{2}.\d{2}.\d{4}', table1.text)
+                except:
+                    datum = datetime.strptime(match.group(), '%d.%m.%Y').date()
+                    self.ausfallbis = datum
+                else:
+                    self.ausfallbis = datetime.strptime("31.12." + date.today().year + 1, '%d.%m.%Y').date()
             else:
                 self.ausfall = 0    #andere Gründe müssen noch gefunden werden.
 
@@ -285,9 +289,8 @@ class Player():
 ##############################################################
 # Für kuze tests bei umbauten an der Klasse!
 
-#s = Player('https://www.transfermarkt.de/mario-vuskovic/profil/spieler/432757')
-# s = Player('https://www.transfermarkt.de/andrea-fulignati/profil/spieler/231381')
-#s = Player('https://www.transfermarkt.de/lee-brown/profil/spieler/120697')
+#s = Player('https://www.transfermarkt.de/paul-pogba/profil/spieler/122153')
+# s = Player('https://www.transfermarkt.de/florent-hanin/profil/spieler/111811')
 # print(s.get_firstname())
 # print(s.get_lastname())
 # print(s.get_trikotnr())
