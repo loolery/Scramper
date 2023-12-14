@@ -235,10 +235,11 @@ playerdatensql.write(p_queryhead + '\n')  # schreibt den sqlheader in die Datei
 #cursor2 = sql2.cursor()
 query = "SELECT ID, Name, Tm_Link FROM tbl_ligen ORDER BY Land_ID"
 db_result = cursor.execute(query)
+
 for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofilen
+    print(f"\n*Start --> {dbr[0]} - {dbr[1]} - https://www.transfermarkt.de{dbr[2]}")
     listTeams, listVereine = [], []
     listTeams = func.search_teamlinks(f"https://www.transfermarkt.de{dbr[2]}")
-    print(f"\n{dbr[2]} - https://www.transfermarkt.de{dbr[2]}")
     for team in listTeams:     #Schleife zum erstellen der einzelnen Objecte für die Vereine
         listVereine.append(vereine.Verein(team))  # Vereine werden aus der Klasse erstellt und einer Liste hinzugefügt
         print(f" Vereinsdaten von {listVereine[-1].get_teamname()} werden geladen...")   #Kontroll Ausgabe der erstellten Vereinsobjecte.
@@ -260,13 +261,11 @@ for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofile
         else:
             sql.commit()
             print('\n')
-            print(f'\n{dbr[2]} - {v.get_teamname()} \n{t_querystring}')
-
-# ============= tbl_personen wird mit Daten gefüllt =======================================
-
+            print(f'\n {v.get_teamname()} - {dbr[2]} \n {t_querystring}')
+        # ============= tbl_personen wird mit Daten gefüllt ======================================
         for pl in v.get_playerlinks():  #Die Schleife durch läuft die einzelnen Spieler welche aus der Vereinsklasse kommen
             count += 1
-            print(f"  --> {pl}") #kontroll ausgabe Spielerprofil-Link
+            print(f"  --> {pl}") #kontroll Ausgabe Spielerprofil-Link
             objS = Spieler.Player(pl)   #abruf der Spielerdaten aus dem Transfermarktprofil
             # SQL-Query wird erstellt und in die Datei geschrieben.
             # Reihenfolge:  ID, Land_ID, Verein_ID, TrikotNr, Vorname, Nachname, Geburtsdatum, Groesse, Fuss,
@@ -277,7 +276,7 @@ for dbr in db_result:   #Schleife für die einzelnen Links zu den Vereinsprofile
             p_querystring += "', " + str(objS.get_groesse()) + ", " + str(func.convertFuss(objS.get_fuss())) + ", " + str(func.convertPosition(objS.get_hauptpos()))
             p_querystring += ", " + str(func.convertPosition(objS.get_nebenpos())) + ", " + str(func.convertPosition(objS.get_nebenpos2()))
             p_querystring += ", " + str(objS.get_nationalspieler()) + ", '" + str(objS.get_imteamseit()) + "', '" + str(objS.get_vertragbis()) + "', " + str(objS.get_marktwert())
-            p_querystring += ", " + str(objS.get_ausfall()) + ", '" + str(objS.get_ausfallbis())    #Dopingsperre
+            p_querystring += ", " + str(objS.get_ausfall()) + ", '" + str(objS.get_ausfallbis())    #Z.b. Dopingsperre
             p_querystring += "', " + str(objS.get_technik()) + ", " + str(objS.get_einsatz()) + ", " + str(objS.get_schnelligkeit()) + ", 100);"
             playerdatensql.write(p_querystring + '\n')    #Ausgabe in .sql file
             try:

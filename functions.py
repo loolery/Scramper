@@ -197,14 +197,25 @@ def landerinfo_suche():
                 else:
                     if name_col is not None:
                         name = name_col.text.strip()
-                        if 'Vereinigtes Königreich' in name:
-                            print(f'https://de.wikipedia.org{name_col.get("href", None)}')
-                            soup2 = soupobj('')
-                            try:
-                                tableuk = soup2.find("table", {"class": "wikitable sortable mw-collapsible zebra jquery-tablesorter mw-made-collapsible"})
-                                for result in tableuk.find_all("a"):
-                                    print(result[c].get("title", None))
 
+                        if 'Vereinigtes Königreich' in name:
+                            soup2 = soupobj(f'https://de.wikipedia.org{name_col.get("href", None)}')
+                            try:
+                                tableuk = soup2.find("table", {"class": "wikitable sortable mw-collapsible zebra"})
+                            except: print('error! -> Vereinigtes Königreich')
+                            else:
+                                for row2 in tableuk.tbody.find_all("tr"):
+                                    if row2.find("a", title=True):
+                                        cell = row2.find_all("td")
+                                        print(f"  {cell[0].text}")
+                                #     if not row.get('src', None) == None and not 'United_Kingdom' in row.get('src', None):
+                                #         print(row.get('src', None).split("//")[1])
+                                # print('\n')
+                                # for result2 in soup2.tbody.find_all("tr"):
+                                #     if not result2.text == None and not 'Vereinigtes' in result2.text.strip():
+                                #         print(result2.text.strip())
+                        #dictionary[name] = [name_englisch, hauptstadt, fahne, einwohner]
+                        #break
 
                     data_cols = row.find_all("td")
                     try: name_englisch = data_cols[-2].text.strip().replace('.', '')
