@@ -227,6 +227,7 @@ sql.commit()
 
 #============= tbl_vereine wird mit Daten gefüllt =======================================
 
+
 t_queryhead = "INSERT INTO tbl_vereine (ID, Stadt_ID, Liga_ID, Name, Tabellenplatz, Gruendung, Vereinsfarben, Stadion, Transfermarkt_Id, Geld) \n VALUES "
 p_queryhead = "INSERT INTO tbl_personen (ID,Land_ID,Verein_ID,TrikotNr,Vorname,Nachname,Geburtsdatum,Groesse,Fuss,Position,Position2,Position3,Nationalspieler,VertragVon,VertragBis,Marktwert,Ausfall,AusfallBis,Technik,Einsatz,Schnelligkeit,Fitness) \n VALUES "
 playerdatensql = open('playerdaten.sql', 'w', encoding="utf-8")  # öffnet die datei in dem die query´s gespeichert werden
