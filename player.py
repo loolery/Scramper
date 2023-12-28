@@ -218,7 +218,6 @@ class Player():
                 datum2 = '01.' + ele[1] if len(ele[1]) == 7 else datum2
                 datum2 = '30.06.' + ele[1] if len(ele[1]) == 4 else datum2
                 if len(datum2) > 8: datum2 = '30.06.' + str(today.year + 1)
-                print(f"{datum2}")
                 self.vertragbis = datetime.strptime(datum2, '%d.%m.%Y').date() if ele[1] is not None else None
 
     def __randrange_float(self, start, stop, step):
