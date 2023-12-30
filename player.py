@@ -7,7 +7,7 @@ import functions as func
 class Player():
 
     def __init__(self, url):
-        self.firstname, self.lastname = None, None
+        self.firstname, self.lastname, self.picture = None, None, None
         self.nation, self.imteamseit, self.vertragbis = None, None, None
         self.hauptpos, self.nebenpos, self.nebenpos2 = '-', '-', '-'
         self.fuss, self.nationalteam, self.gebdatum = 0, 0, 0
@@ -17,6 +17,7 @@ class Player():
 
         soup = func.soupobj(url)
         self.__search_name(soup)
+        self.__search_picture(soup)
         self.__search_ausfall(soup)
         self.__search_TrikotNr(soup)
         self.__search_marktwert(soup)
@@ -33,6 +34,10 @@ class Player():
         if self.lastname is None:
             self.lastname = '-'
         return self.lastname
+    def get_picture(self):
+        if self.picture is None:
+            self.picture = 'https://i.seadn.io/gae/PTIvyNEFSwpiBA-Kv7ZTRNGzBOOxMzIW59q5vX02Ml911J4_Y5UwfooDhE6oQrULV0M5YODgqWkr6W4o19bxLY2qXCJuDhJ8Y4uObg'
+        return self.picture
     def get_ausfall(self):
         return self.ausfall
     def get_ausfallbis(self):
@@ -118,6 +123,14 @@ class Player():
             if "'" in self.firstname:
                 self.firstname = self.firstname.replace("'", " ")
 
+    def __search_picture(self, soup):
+        try:
+            table = soup.find('div', class_='modal-trigger').find("img")
+        except:
+            self.picture = None
+        else:
+            self.picture = table['src']
+
     def __search_TrikotNr(self, soup):
         # Suche Rückennummer
         try:
@@ -198,17 +211,25 @@ class Player():
         # Fügt beide Boxen zusammen, um sie dann einzeln auf die Klassenvariablen zu verteilen
         box_elements = list(zip(box_left, box_right))
         for ele in box_elements:
-            if "Geburtsdatum:" in ele[0]:
-                datum = ele[1].replace('Happy Birthday', '').strip()
-                self.gebdatum = datetime.strptime(datum, '%d.%m.%Y').date() if 'Happy Birthday' in ele[
-                    1] else datetime.strptime(ele[1], '%d.%m.%Y').date()
+            if "Geb./Alter:" in ele[0]:
+                # trennt das Geburtsdatum vom Alter
+                try:
+                    self.gebdatum = datetime.strptime(re.findall(r'(\d{2}.\d{2}.\d{4})', ele[1])[0], '%d.%m.%Y').date()
+                except:
+                    self.gebdatum = None
             elif 'Nationalität:' in ele[0]:
-                self.nation = re.split(r'\s+', ele[1]) if ele[1] is not None else None
+                try:
+                    self.nation = re.split(r'\s+', ele[1])
+                except:
+                    self.nation = None
             elif 'Größe:' in ele[0]:
                 gross = re.findall(r'-?\d+\.?\d*', ele[1]) if ele[1] is not None else None
                 self.groesse = gross[0] + gross[1] if gross is not None else None
             elif "Fuß:" in ele[0]:
-                self.fuss = ele[1] if ele[1] is not None else None
+                try:
+                    self.fuss = ele[1]
+                except:
+                    self.fuss = None
             elif "Im Team seit:" in ele[0]:
                 datum = '01.01.' + str(today.year) if '-' in ele[1] else ele[1]
                 datum = '01.' + ele[1] if len(ele[1]) == 7 else datum
@@ -290,15 +311,16 @@ class Player():
 ##############################################################
 # Für kuze tests bei umbauten an der Klasse!
 
-# s = Player('https://www.transfermarkt.de/clement-vidal/profil/spieler/569388')
-#s = Player('https://www.transfermarkt.de/temirkan-sundukov/profil/spieler/654591')
+# s = Player('https://www.transfermarkt.de/tony-tumelty/profil/spieler/103988')
+# #s = Player('https://www.transfermarkt.de/temirkan-sundukov/profil/spieler/654591')
 # print(s.get_firstname())
 # print(s.get_lastname())
+# print(s.get_picture())
 # print(s.get_trikotnr())
 # print(s.get_geburtstag())
 # print(s.get_fuss())
 # print(s.get_groesse())
-# print(s.get_land())
+# print(s.get_land()[0])
 # #print(func.getLandId(s.get_land()[0]))
 # print(s.get_nationalspieler())
 # print(s.get_marktwert())

@@ -204,6 +204,7 @@ query = "CREATE TABLE IF NOT EXISTS 'tbl_personen' " \
         "Geburtsdatum STRING(10) NOT NULL, " \
         "Groesse INTEGER(3) NOT NULL, " \
         "Fuss INTEGER(1) NOT NULL, " \
+        "Foto STRING(112) NOT NULL, " \
         "Position INTEGER(1) NOT NULL, " \
         "Position2 INTEGER(1) NOT NULL, " \
         "Position3 INTEGER(1) NOT NULL, " \
@@ -229,7 +230,7 @@ sql.commit()
 
 
 t_queryhead = "INSERT INTO tbl_vereine (ID, Stadt_ID, Liga_ID, Name, Tabellenplatz, Gruendung, Vereinsfarben, Stadion, Transfermarkt_Id, Geld) \n VALUES "
-p_queryhead = "INSERT INTO tbl_personen (ID,Land_ID,Verein_ID,TrikotNr,Vorname,Nachname,Geburtsdatum,Groesse,Fuss,Position,Position2,Position3,Nationalspieler,VertragVon,VertragBis,Marktwert,Ausfall,AusfallBis,Technik,Einsatz,Schnelligkeit,Fitness) \n VALUES "
+p_queryhead = "INSERT INTO tbl_personen (ID,Land_ID,Verein_ID,TrikotNr,Vorname,Nachname,Geburtsdatum,Groesse,Fuss,Foto, Position,Position2,Position3,Nationalspieler,VertragVon,VertragBis,Marktwert,Ausfall,AusfallBis,Technik,Einsatz,Schnelligkeit,Fitness) \n VALUES "
 playerdatensql = open('playerdaten.sql', 'w', encoding="utf-8")  # öffnet die datei in dem die query´s gespeichert werden
 playerdatensql.write(p_queryhead + '\n')  # schreibt den sqlheader in die Datei
 
@@ -271,13 +272,13 @@ for dbr in listLigen:   #Schleife startet den durchlauf der Ligen aus der SQL-Ab
             print(f"  --> {pl}") #kontroll Ausgabe Spielerprofil-Link
             objS = Spieler.Player(pl)   #abruf der Spielerdaten aus dem Transfermarktprofil
             # SQL-Query wird erstellt und in die Datei geschrieben.
-            # Reihenfolge:  ID, Land_ID, Verein_ID, TrikotNr, Vorname, Nachname, Geburtsdatum, Groesse, Fuss,
+            # Reihenfolge:  ID, Land_ID, Verein_ID, TrikotNr, Vorname, Nachname, Geburtsdatum, Groesse, Fuss, Foto
             #               Position, Nebenposition, Nebenposition2, Nationalspieler, VertragVon,
             #               VertragBis, Marktwert, Ausfall, AusfallBis Technik, Einsatz, Schnelligkeit, Fitness
             p_querystring = "(" + str(count) + ", " + str(func.getLandId(cursor, objS.get_land()[0])) + ", " + str(t_count) + ", "
             p_querystring += str(objS.get_trikotnr()) + ", '" + str(objS.get_firstname()) + "', '" + str(objS.get_lastname()) + "', '" + str(objS.get_geburtstag())
-            p_querystring += "', " + str(objS.get_groesse()) + ", " + str(func.convertFuss(objS.get_fuss())) + ", " + str(func.convertPosition(objS.get_hauptpos()))
-            p_querystring += ", " + str(func.convertPosition(objS.get_nebenpos())) + ", " + str(func.convertPosition(objS.get_nebenpos2()))
+            p_querystring += "', " + str(objS.get_groesse()) + ", " + str(func.convertFuss(objS.get_fuss())) + ", '" + str(objS.get_picture())
+            p_querystring += "', " + str(func.convertPosition(objS.get_hauptpos())) + ", " + str(func.convertPosition(objS.get_nebenpos())) + ", " + str(func.convertPosition(objS.get_nebenpos2()))
             p_querystring += ", " + str(objS.get_nationalspieler()) + ", '" + str(objS.get_imteamseit()) + "', '" + str(objS.get_vertragbis()) + "', " + str(objS.get_marktwert())
             p_querystring += ", " + str(objS.get_ausfall()) + ", '" + str(objS.get_ausfallbis())    #Z.b. Dopingsperre
             p_querystring += "', " + str(objS.get_technik()) + ", " + str(objS.get_einsatz()) + ", " + str(objS.get_schnelligkeit()) + ", 100);"
