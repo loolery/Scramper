@@ -231,19 +231,40 @@ def landerinfo_suche():
     return dictionary.items()
 result = landerinfo_suche()
 
+# def laender_suche():
+#     # läd von Transfermarkt.de alle Länder mit Ligen in Europa
+#     # zurückgegeben wird der Name des Landes und deren Transfermarkt-ID
+#     soup = soupobj('https://www.transfermarkt.de/wettbewerbe/europa/wettbewerbe')
+#     dictionary = {}
+#     chars = "0123456789,#%&$"
+#     count = 0
+#     # Suche die Tabelle im Quelltext
+#     try:
+#         table = soup.find("map", {"id": "europa_Map"})
+#     except:
+#         result = None
+#         print(' ## Error - Map mit Ländern auf Transfermarkt wurde nicht gefunden!')
+#     else:
+#         for row in table.find_all("area"):
+#             if row.get('href', None).split('/')[4].strip().isnumeric():
+#                 count += 1
+#                 name = row.get('title', None).strip()
+#                 id = row.get('href', None).split('/')[4].strip()
+#                 dictionary[name] = [id]
+#     return dictionary.items()
 def laender_suche():
-    # läd von Transfermarkt.de alle Länder mit Ligen in Europa
+    # liest von Transfermarkt.de alle Länder mit Ligen ein.
     # zurückgegeben wird der Name des Landes und deren Transfermarkt-ID
-    soup = soupobj('https://www.transfermarkt.de/wettbewerbe/europa/wettbewerbe')
     dictionary = {}
     chars = "0123456789,#%&$"
-    count = 0
     # Suche die Tabelle im Quelltext
+    count = 0
+    soup = soupobj('https://www.transfermarkt.de/wettbewerbe/europa/wettbewerbe')
     try:
         table = soup.find("map", {"id": "europa_Map"})
     except:
         result = None
-        print(' ## Error - Map mit Ländern auf Transfermarkt wurde nicht gefunden!')
+        print(' ## Error - Europa Map mit Ländern auf Transfermarkt wurde nicht gefunden!')
     else:
         for row in table.find_all("area"):
             if row.get('href', None).split('/')[4].strip().isnumeric():
@@ -251,7 +272,51 @@ def laender_suche():
                 name = row.get('title', None).strip()
                 id = row.get('href', None).split('/')[4].strip()
                 dictionary[name] = [id]
+    # Suche die Tabelle im Quelltext
+    count = 0
+    soup1 = soupobj('https://www.transfermarkt.de/wettbewerbe/amerika/wettbewerbe')
+    try:
+        table1 = soup1.find("map", {"name": "amerika_Map"})
+    except:
+        result = None
+        print(' ## Error - Amerika Map mit Ländern auf Transfermarkt wurde nicht gefunden!')
+    else:
+        for row in table1.find_all("area"):
+            if row.get('href', None).split('/')[4].strip().isnumeric():
+                count += 1
+                name = row.get('title', None).strip()
+                id = row.get('href', None).split('/')[4].strip()
+                dictionary[name] = [id]
+    count = 0
+    soup2 = soupobj('https://www.transfermarkt.de/wettbewerbe/asien/wettbewerbe')
+    try:
+        table2 = soup2.find("map", {"name": "asien_Map"})
+    except:
+        result = None
+        print(' ## Error - Asien Map mit Ländern auf Transfermarkt wurde nicht gefunden!')
+    else:
+        for row in table2.find_all("area"):
+            if row.get('href', None).split('/')[4].strip().isnumeric():
+                count += 1
+                name = row.get('title', None).strip()
+                id = row.get('href', None).split('/')[4].strip()
+                dictionary[name] = [id]
+    count = 0
+    soup3 = soupobj('https://www.transfermarkt.de/wettbewerbe/afrika/wettbewerbe')
+    try:
+        table3 = soup3.find("map", {"name": "afrika_Map"})
+    except:
+        result = None
+        print(' ## Error - Afrika Map mit Ländern auf Transfermarkt wurde nicht gefunden!')
+    else:
+        for row in table3.find_all("area"):
+            if row.get('href', None).split('/')[4].strip().isnumeric():
+                count += 1
+                name = row.get('title', None).strip()
+                id = row.get('href', None).split('/')[4].strip()
+                dictionary[name] = [id]
     return dictionary.items()
+
 
 def ligen_suche(id):
     # Sucht bei Transfermarkt.de nach den ID´s(String) der einzelnen Ligen eines Landes und gibt diese zurück.

@@ -204,7 +204,7 @@ query = "CREATE TABLE IF NOT EXISTS 'tbl_personen' " \
         "Geburtsdatum STRING(10) NOT NULL, " \
         "Groesse INTEGER(3) NOT NULL, " \
         "Fuss INTEGER(1) NOT NULL, " \
-        "Foto STRING(112) NOT NULL, " \
+        "Foto STRING(96) NOT NULL, " \
         "Position INTEGER(1) NOT NULL, " \
         "Position2 INTEGER(1) NOT NULL, " \
         "Position3 INTEGER(1) NOT NULL, " \

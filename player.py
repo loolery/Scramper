@@ -311,7 +311,7 @@ class Player():
 ##############################################################
 # Für kuze tests bei umbauten an der Klasse!
 
-# s = Player('https://www.transfermarkt.de/tony-tumelty/profil/spieler/103988')
+# s = Player('https://www.transfermarkt.de/ousmane-dembele/profil/spieler/288230')
 # #s = Player('https://www.transfermarkt.de/temirkan-sundukov/profil/spieler/654591')
 # print(s.get_firstname())
 # print(s.get_lastname())
