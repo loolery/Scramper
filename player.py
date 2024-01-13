@@ -224,6 +224,10 @@ class Player():
                     self.nation = None
             elif 'Größe:' in ele[0]:
                 gross = re.findall(r'-?\d+\.?\d*', ele[1]) if ele[1] is not None else None
+                try:
+                    bool(isinstance(gross[0], str))
+                except:
+                    gross = None
                 self.groesse = gross[0] + gross[1] if gross is not None else None
             elif "Fuß:" in ele[0]:
                 try:
@@ -311,7 +315,7 @@ class Player():
 ##############################################################
 # Für kuze tests bei umbauten an der Klasse!
 
-# s = Player('https://www.transfermarkt.de/ousmane-dembele/profil/spieler/288230')
+# s = Player('https://www.transfermarkt.de/marvin-fagan/profil/spieler/991413')
 # #s = Player('https://www.transfermarkt.de/temirkan-sundukov/profil/spieler/654591')
 # print(s.get_firstname())
 # print(s.get_lastname())
