@@ -102,10 +102,13 @@ class Verein():
 
     def __search_gruendung(self, soup):
         table = soup.find("div", {"class": "info-table info-table--equal-space"})
-        table1 = table.find_all("span", {"class": "info-table__content info-table__content--bold"})
-        for t in table1:
-            if re.search('^[0-3][0-9][/.][0-3][0-9][/.](?:[0-9][0-9])?[0-9][0-9]$', t.get_text()):
-                self.__gruendung = datetime.strptime(t.get_text(), '%d.%m.%Y').date()
+        if table != None:
+            table1 = table.find_all("span", {"class": "info-table__content info-table__content--bold"})
+            for t in table1:
+                if re.search('^[0-3][0-9][/.][0-3][0-9][/.](?:[0-9][0-9])?[0-9][0-9]$', t.get_text()):
+                    self.__gruendung = datetime.strptime(t.get_text(), '%d.%m.%Y').date()
+        else:
+            self.__gruendung = None
 
     def __search_teamcolor(self, url):
         self.__teamcolor = []
@@ -148,23 +151,23 @@ def search_teamlink(url):
         team_link.append('https://www.transfermarkt.de' + a.get('href', None))
     return team_link
 
-# Code um die Klasse allein bei veränderungen zu testen.
-# teams = search_teamlink('https://www.transfermarkt.de/laliga/startseite/wettbewerb/ES1')
-# verein = []
-# for t in teams:
-#     objVerein = Verein(t)
-#     verein.append(objVerein)
-#     print(f"Vereinsdaten von {objVerein.get_teamname()} sind geladen.")
-# print("\n")
-# for v in verein:
-#     print(' ======================================== \n')
-#     print(f'Team: {v.get_teamname()}')
-#     print(f'ID: {v.get_transfermarktid()}')
-#     print(f'Tabellenplatz: {v.get_ligarang()}')
-#     print(f'Stadion: {v.get_stadionname()}')
-#     print(f'Grundungstag: {v.get_gruendung()}')
-#     print(f'Vereinsfarben: {v.get_teamcolor()}')
-#     print(f'Stadt: {str(v.get_stadtid())}')
-#     playerlinks = v.get_playerlinks()
-#     for pl in playerlinks:
-#         print(f'   --> {pl}')
+#Code um die Klasse allein bei veränderungen zu testen.
+teams = search_teamlink('https://www.transfermarkt.de/kyrgyz-premier-league/startseite/wettbewerb/KG1L')
+verein = []
+for t in teams:
+    objVerein = Verein(t)
+    verein.append(objVerein)
+    print(f"Vereinsdaten von {objVerein.get_teamname()} sind geladen.")
+print("\n")
+for v in verein:
+    print(' ======================================== \n')
+    print(f'Team: {v.get_teamname()}')
+    print(f'ID: {v.get_transfermarktid()}')
+    print(f'Tabellenplatz: {v.get_ligarang()}')
+    print(f'Stadion: {v.get_stadionname()}')
+    print(f'Grundungstag: {v.get_gruendung()}')
+    print(f'Vereinsfarben: {v.get_teamcolor()}')
+    print(f'Stadt: {str(v.get_stadtid())}')
+    playerlinks = v.get_playerlinks()
+    for pl in playerlinks:
+        print(f'   --> {pl}')
