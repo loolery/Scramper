@@ -92,16 +92,16 @@ class Player():
         return self.schnelligkeit
 
     def __search_ausfall(self, soup):
-        # Suche nach Sperre oder Verletzungsausfall des Spielers
+        # search for suspended or injured ...
         try:
             table = soup.find("div", {"class": "verletzungsbox"})
             table1 = table.find("div", {"class": "text"})
         except:
-            self.ausfall = 0    #Spieler fällt aktuell nicht aus
+            self.ausfall = 0    # Player is currently ready to play
             self.ausfallbis = 0
         else:
             if "Dopingsperre" in table1.text:
-                self.ausfall = 1  # Spieler fällt aus
+                self.ausfall = 1  # Player is currently suspended or injured
                 try:
                     match = re.search(r'\d{2}.\d{2}.\d{4}', table1.text)
                 except:
@@ -110,10 +110,10 @@ class Player():
                 else:
                     self.ausfallbis = datetime.strptime("31.12." + str(date.today().year + 1), '%d.%m.%Y').date()
             else:
-                self.ausfall = 0    #andere Gründe müssen noch gefunden werden.
+                self.ausfall = 0    #not sure.
 
     def __search_name(self, soup):
-        # Suche Vor- und Nachname
+        # Search First- and Lastname
         header = soup.h1
         if header.contents[2].strip(): self.firstname = header.contents[2].strip()
         self.lastname = header.strong.text
@@ -132,7 +132,7 @@ class Player():
             self.picture = table['src']
 
     def __search_TrikotNr(self, soup):
-        # Suche Rückennummer
+        # search for jersey nr.
         try:
             table = soup.find("h1", {"data-header__headline-wrapper"})
             table1 = table.find_all("span", {"class": "data-header__shirt-number"})
@@ -149,21 +149,15 @@ class Player():
         # Suche Marktwert
         self.marktwert = '10000'
         try:
-            div = soup.find_all("div", {"class": "tm-player-market-value-development__current-value"})
+            marktwert = soup.findAll('meta', {'name': 'description'})
+            for tag in marktwert:
+                content = tag['content']
+                if 'Marktwert' in content:
+                    div = content.split('Marktwert: ')[1].split(' ')[0] + " " + content.split('Marktwert: ')[1].split(' ')[1]
+            if div:
+                self.marktwert = func.marktwerte_korrigieren(div)
         except:
             self.marktwert = '10002'
-        else:
-            if div:
-                self.marktwert = div[0].text.strip()
-            suffixes = {' Mio. €': '0000', ',00 Mio. €': '000000', 'Tsd. €': '000'}
-            for suffix, multiplier in suffixes.items():
-                if suffix in self.marktwert:
-                    self.marktwert = self.marktwert.translate(str.maketrans('', '', suffix)) + multiplier
-            self.marktwert = self.marktwert.replace(' ', '').replace(',', '')
-            if '-' in self.marktwert:
-                self.marktwert = '10001'
-
-
     def __search_nationalspieler(self, soup):
         # Nationalspieler?
         self.nationalteam = None
@@ -222,8 +216,13 @@ class Player():
                     self.nation = re.split(r'\s+', ele[1])
                 except:
                     self.nation = None
+            elif 'Staatsbürgerschaft:' in ele[0]:
+                try:
+                    self.nation = re.split(r'\s+', ele[1])
+                except:
+                    self.nation = None
             elif 'Größe:' in ele[0]:
-                gross = re.findall(r'-?\d+\.?\d*', ele[1]) if ele[1] is not None else None
+                gross = re.findall(r'-?\d+\.?\d*', ele[1].replace("|", "1")) if ele[1] is not None else None
                 try:
                     bool(isinstance(gross[0], str))
                 except:
@@ -316,7 +315,7 @@ class Player():
 # Für kuze tests bei umbauten an der Klasse!
 
 # s = Player('https://www.transfermarkt.de/marvin-fagan/profil/spieler/991413')
-# #s = Player('https://www.transfermarkt.de/temirkan-sundukov/profil/spieler/654591')
+# s = Player('https://www.transfermarkt.de/daniel-nunez/profil/spieler/1245609')
 # print(s.get_firstname())
 # print(s.get_lastname())
 # print(s.get_picture())

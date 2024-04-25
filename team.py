@@ -6,7 +6,7 @@ class Verein():
     __tname, __transfermarktid = '', ''
     __turl, __tdatenurl = '', ''
     __teamcolor, __playerlinks = [], []
-    __ligarang, __stadionnamen, __gruendung = None, '', ''
+    __ligarang, __stadionnamen, __stadiongroesse, __gruendung = None, '', 0, ''
     __stadt, __transfermarktid = None, None
 
     def __init__(self, url):
@@ -47,6 +47,8 @@ class Verein():
 
     def get_stadionname(self):
         return self.__stadionnamen
+    def get_stadionsize(self):
+        return self.__stadionsize
 
     def get_gruendung(self):
         return self.__gruendung
@@ -69,7 +71,11 @@ class Verein():
         self.__tname = soup.find('div', {'class': 'data-header__headline-container'}).get_text().strip()
 
     def __search_transfermarktid(self, soup):
-        self.__transfermarktid = soup.find('div', {'class': 'row hide-on-print', 'id': 'subnavi'})['data-id']
+        print(self.__turl)
+        try:
+            self.__transfermarktid = soup.find('div', {'class': 'row hide-on-print', 'id': 'subnavi'})['data-id']
+        except:
+            self.__transfermarktid = soup.find('tm-subnavigation')['id']
 
     def __search_ligarang(self, soup):
         try:
@@ -99,6 +105,8 @@ class Verein():
             for b in a:
                 if '/stadion/' in b.get('href', None):
                     self.__stadionnamen = b.get_text().replace("'", " ")
+        table2 = soup.find_all('span', class_='tabellenplatz')[-1]
+        self.__stadionsize = table2.text.split()[0].replace(".", "")
 
     def __search_gruendung(self, soup):
         table = soup.find("div", {"class": "info-table info-table--equal-space"})
@@ -165,6 +173,7 @@ for v in verein:
     print(f'ID: {v.get_transfermarktid()}')
     print(f'Tabellenplatz: {v.get_ligarang()}')
     print(f'Stadion: {v.get_stadionname()}')
+    print(f'Stadion größe: {v.get_stadionsize()}')
     print(f'Grundungstag: {v.get_gruendung()}')
     print(f'Vereinsfarben: {v.get_teamcolor()}')
     print(f'Stadt: {str(v.get_stadtid())}')

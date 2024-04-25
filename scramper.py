@@ -14,7 +14,7 @@ today = date.today()    #damit die Url auf die aktuelle Mannschaft von diesem Ja
 count = 0               #für die ID der sqlite zeile
 t_count = 0
 db_name = 'new_database.db3'    #SQLite DB zum schreiben
-sql2 = sqlite3.connect('database.db3')   #SQLite DB zum lesen
+#sql2 = sqlite3.connect('database.db3')   #SQLite DB zum lesen
 
 # Städtelisten D, GB, ES, I, FR
 staedte_urls = ('https://de.wikipedia.org/wiki/Liste_der_Gro%C3%9F-_und_Mittelst%C3%A4dte_in_Deutschland', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_im_Vereinigten_K%C3%B6nigreich', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Spanien', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Italien', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Frankreich', )
@@ -185,6 +185,7 @@ query = "CREATE TABLE IF NOT EXISTS 'tbl_vereine' " \
         "Gruendung STRING(10) NOT NULL, " \
         "Vereinsfarben STRING (32) NOT NULL, " \
         "Stadion STRING(32) NOT NULL, " \
+        "Stadionplaetze INTEGER(6) NOT NULL, " \
         "Transfermarkt_Id STRING(5) NOT NULL, " \
         "Geld INTEGER(12) NOT NULL);"
 try:
@@ -229,7 +230,7 @@ sql.commit()
 #============= tbl_vereine wird mit Daten gefüllt =======================================
 
 
-t_queryhead = "INSERT INTO tbl_vereine (ID, Stadt_ID, Liga_ID, Name, Tabellenplatz, Gruendung, Vereinsfarben, Stadion, Transfermarkt_Id, Geld) \n VALUES "
+t_queryhead = "INSERT INTO tbl_vereine (ID, Stadt_ID, Liga_ID, Name, Tabellenplatz, Gruendung, Vereinsfarben, Stadion, Stadionplaetze, Transfermarkt_Id, Geld) \n VALUES "
 p_queryhead = "INSERT INTO tbl_personen (ID,Land_ID,Verein_ID,TrikotNr,Vorname,Nachname,Geburtsdatum,Groesse,Fuss,Foto, Position,Position2,Position3,Nationalspieler,VertragVon,VertragBis,Marktwert,Ausfall,AusfallBis,Technik,Einsatz,Schnelligkeit,Fitness) \n VALUES "
 playerdatensql = open('playerdaten.sql', 'w', encoding="utf-8")  # öffnet die datei in dem die query´s gespeichert werden
 playerdatensql.write(p_queryhead + '\n')  # schreibt den sqlheader in die Datei
@@ -254,7 +255,7 @@ for dbr in listLigen:   #Schleife startet den durchlauf der Ligen aus der SQL-Ab
         #               Stadionname, Transfermarkt_ID, Vereinsbudge,
         t_querystring = "(" + str(t_count) + ", " + str(v.get_stadtid()) + ", " + str(dbr[0]) + ", '" + str(func.germanConvert(v.get_teamname()))
         t_querystring += "', " + str(v.get_ligarang()) + ", '" + str(v.get_gruendung()) + "', '" + str(v.get_teamcolor())
-        t_querystring += "', '" + str(v.get_stadionname()) + "', " + str(v.get_transfermarktid()) + ", 100);"
+        t_querystring += "', '" + str(v.get_stadionname()) + "', " + str(v.get_stadionsize()) + ", " + str(v.get_transfermarktid()) + ", 100);"
         try:
             tquery = t_queryhead + t_querystring
             db_result = cursor.execute(tquery)

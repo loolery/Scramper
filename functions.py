@@ -21,7 +21,7 @@ def conCheck(url):
             time.sleep(10)
 def soupobj(url):
     heads = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}
-    requests_cache.install_cache('my_cache', expire_after=86400)
+    requests_cache.install_cache('my_cache', expire_after=259200)
     while True:
         try:
             response = requests.get(url, headers=heads)
@@ -360,6 +360,12 @@ def ligen_suche(id):
             print('break2: ', error)
     print('\n')
     return dictionary.items()
-# search = ligen_suche('99')
-# for se in search:
-#     print(se)
+def marktwerte_korrigieren(marktwert):
+    value_str = marktwert.replace(',', '.')  # Ersetze das Komma durch einen Punkt für die Dezimaldarstellung
+    if 'Mio.' in value_str:  # Wenn "Mio." in der Zeichenkette vorhanden ist
+        value = float(value_str.replace(' Mio.', '')) * 1000000  # Entferne "Mio." und multipliziere mit 1.000.000
+    elif 'Tsd.' in value_str:  # Wenn "Tsd." in der Zeichenkette vorhanden ist
+        value = float(value_str.replace(' Tsd.', '')) * 1000  # Entferne "Tsd." und multipliziere mit 1.000
+    else:
+        value = float(value_str)  # Wenn keine Einheit angegeben ist, konvertiere einfach die Zahl in float
+    return int(value)  # Rückgabe des Werts als Integer
