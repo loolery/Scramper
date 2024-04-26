@@ -160,7 +160,7 @@ def search_teamlink(url):
     return team_link
 
 #Code um die Klasse allein bei veränderungen zu testen.
-teams = search_teamlink('https://www.transfermarkt.de/kyrgyz-premier-league/startseite/wettbewerb/KG1L')
+teams = search_teamlink('https://www.transfermarkt.de/brera-tchumene/startseite/verein/114630/saison_id/2023')
 verein = []
 for t in teams:
     objVerein = Verein(t)
