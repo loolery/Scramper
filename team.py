@@ -12,6 +12,7 @@ class Verein():
     def __init__(self, url):
         self.__turl = url
         self.__tdatenurl = self.__turl.replace('startseite', 'datenfakten')
+        self.__tdatenurl = self.__tdatenurl.replace('kader', 'datenfakten')
         match = re.search(r'\d+(?=/\Z)', self.__turl)
         if match: self.__tid = match.group()
         match = re.search(r'markt\.de/(.*?)/startseite', self.__turl)
@@ -153,19 +154,9 @@ class Verein():
                         self.__stadt = match.group(1).strip()
                         break
 
-def search_teamlink(url):
-    # Gibt eine Liste aller gefunden Vereinslinks in der Liga zurück.
-    team_link = []
-    soup = func.soupobj(url)
-    table = soup.find_all("td", {"class": "hauptlink no-border-links"})
-    for t in table:
-        a = t.find("a", href=True)
-        team_link.append('https://www.transfermarkt.de' + a.get('href', None))
-    return team_link
-
-#Code um die Klasse allein bei veränderungen zu testen.
-# testteam = 'https://www.transfermarkt.de/mocambola/startseite/wettbewerb/MO1L'
-# teams = search_teamlink(testteam)
+# #Code um die Klasse allein bei veränderungen zu testen.
+# testteam = 'https://www.transfermarkt.de/campeonato-brasileiro-serie-c/startseite/pokalwettbewerb/BRA3'
+# teams = func.search_teamlinks(testteam)
 # verein = []
 # for t in teams:
 #     objVerein = Verein(t)

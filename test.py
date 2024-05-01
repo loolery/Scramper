@@ -1,6 +1,8 @@
+import re
 import requests
 import requests_cache
 import subprocess
+import time
 from bs4 import BeautifulSoup
 
 def conCheck(url):
@@ -29,34 +31,31 @@ def soupobj(url):
             print(f" Connection failed! Next try in 10 seconds... {url}")
             time.sleep(10)
     return soup
+def germanConvert(word):
+    word = word.replace("ä", "ae")
+    word = word.replace("ö", "oe")
+    word = word.replace("ü", "ue")
+    word = word.replace("ß", "ss")
+    return word
+def search_teamlinks(url):
+    # searching for the teamlinks on transfermarkt.de, needs the url of a country
+    team_link = []
+    soup = soupobj(url)
+    table = soup.find_all("td", {"class": "hauptlink no-border-links"})
+    for t in table:
+        a = t.find("a", href=True)
+        team_link.append('https://www.transfermarkt.de' + a.get('href', None))
+    #if no teams found, try a different way
+    if(len(team_link) == 0):
+        table =soup.find_all("span", {"class": "vereinsname"})
+        for t in table:
+            a = t.find("a", href=True)
+            if(a.get('href', None).find('spielplan')):
+                link = 'https://www.transfermarkt.de' + a.get('href', None).replace('spielplan', 'kader')
+            team_link.append(link)
+    return team_link
 
-def ligen_suche(id):
-    # Sucht bei Transfermarkt.de nach den ID´s der einzelnen Ligen eines Landes und gibt diese zurück.
-    dictionary = {}
-    count, count2 = 0, 0
-    img, href = [], []
-    soup = soupobj('https://www.transfermarkt.de/wettbewerbe/national/wettbewerbe/' + id)
-    try:
-        table = soup.find("table", {"class": "items"})
-        for link in table.find_all("img", {"class": "continental-league-emblem"}):
-            img.append(link.get('src', None))
-        for link2 in table.find_all("a"):
-            href.append(link2.get('href', None))
-    except:
-        print('  -> cancel')
-    else:
-        try:
-            for tab in soup.find_all("td", {"class": "extrarow bg_blau_20 hauptlink"}):
-                if '.Liga' in tab.text:
-                    if count >=1 and tab.text == '1.Liga' or count >= 3: break # schützt vor wiederholungen und reduziert auf max. 3 Ligen.
-                    name = tab.text
-                    url = href[count2 + 1]
-                    picture = img[count]
-                    dictionary[name] = [url, picture]
-                count+=1
-                count2+=2
-        except:
-            print('break')
-    print('\n')
-    return dictionary.items()
+
+url = "https://www.transfermarkt.de/campeonato-brasileiro-serie-c/startseite/pokalwettbewerb/BRA3"
+print(f'{search_teamlinks(url)}')
 

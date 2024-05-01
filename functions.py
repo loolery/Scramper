@@ -105,13 +105,21 @@ def convertFuss(fuss):
     return fuss_id
 
 def search_teamlinks(url):
-    # Gibt eine Liste aller gefunden Vereinslinks in der Liga zurück.
+    # searching for the teamlinks on transfermarkt.de, needs the url of a country
     team_link = []
     soup = soupobj(url)
     table = soup.find_all("td", {"class": "hauptlink no-border-links"})
     for t in table:
         a = t.find("a", href=True)
         team_link.append('https://www.transfermarkt.de' + a.get('href', None))
+    #if no teams found, try a different way
+    if(len(team_link) == 0):
+        table =soup.find_all("span", {"class": "vereinsname"})
+        for t in table:
+            a = t.find("a", href=True)
+            if(a.get('href', None).find('spielplan')):
+                link = 'https://www.transfermarkt.de' + a.get('href', None).replace('spielplan', 'kader')
+            team_link.append(link)
     return team_link
 
 def staedte_suche(url):
