@@ -105,8 +105,12 @@ class Verein():
             for b in a:
                 if '/stadion/' in b.get('href', None):
                     self.__stadionnamen = b.get_text().replace("'", " ")
-        table2 = soup.find_all('span', class_='tabellenplatz')[-1]
-        self.__stadionsize = table2.text.split()[0].replace(".", "")
+        try:
+            table2 = soup.find_all('span', class_='tabellenplatz')[-1]
+        except:
+            self.__stadionsize = '0'
+        else:
+            self.__stadionsize = table2.text.split()[0].replace(".", "").replace("-", "0")
 
     def __search_gruendung(self, soup):
         table = soup.find("div", {"class": "info-table info-table--equal-space"})
@@ -160,23 +164,24 @@ def search_teamlink(url):
     return team_link
 
 #Code um die Klasse allein bei veränderungen zu testen.
-teams = search_teamlink('https://www.transfermarkt.de/brera-tchumene/startseite/verein/114630/saison_id/2023')
-verein = []
-for t in teams:
-    objVerein = Verein(t)
-    verein.append(objVerein)
-    print(f"Vereinsdaten von {objVerein.get_teamname()} sind geladen.")
-print("\n")
-for v in verein:
-    print(' ======================================== \n')
-    print(f'Team: {v.get_teamname()}')
-    print(f'ID: {v.get_transfermarktid()}')
-    print(f'Tabellenplatz: {v.get_ligarang()}')
-    print(f'Stadion: {v.get_stadionname()}')
-    print(f'Stadion größe: {v.get_stadionsize()}')
-    print(f'Grundungstag: {v.get_gruendung()}')
-    print(f'Vereinsfarben: {v.get_teamcolor()}')
-    print(f'Stadt: {str(v.get_stadtid())}')
-    playerlinks = v.get_playerlinks()
-    for pl in playerlinks:
-        print(f'   --> {pl}')
+# testteam = 'https://www.transfermarkt.de/mocambola/startseite/wettbewerb/MO1L'
+# teams = search_teamlink(testteam)
+# verein = []
+# for t in teams:
+#     objVerein = Verein(t)
+#     verein.append(objVerein)
+#     print(f"Vereinsdaten von {objVerein.get_teamname()} sind geladen.")
+# print("\n")
+# for v in verein:
+#     print(' ======================================== \n')
+#     print(f'Team: {v.get_teamname()}')
+#     print(f'ID: {v.get_transfermarktid()}')
+#     print(f'Tabellenplatz: {v.get_ligarang()}')
+#     print(f'Stadion: {v.get_stadionname()}')
+#     print(f'Stadion größe: {v.get_stadionsize()}')
+#     print(f'Grundungstag: {v.get_gruendung()}')
+#     print(f'Vereinsfarben: {v.get_teamcolor()}')
+#     print(f'Stadt: {str(v.get_stadtid())}')
+#     playerlinks = v.get_playerlinks()
+#     for pl in playerlinks:
+#         print(f'   --> {pl}')

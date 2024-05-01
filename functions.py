@@ -184,11 +184,10 @@ def landerinfo_suche():
     dictionary = {}
     chars = "0123456789,#%&$"
     count = 0
-    # Suche die Tabelle im Quelltext
     try: table = soup.find("table", {"class": "wikitable"})
     except: result = None   #Tabelle konnte nicht gefunden werden.
     else:
-        #Suche nach den Daten in den Feldern 'Name', 'Bundesland' 'aktuellste Einwohnerzahl'
+        #Searching for data in fields like 'Name', 'Bundesland' 'aktuellste Einwohnerzahl'
         for row in table.tbody.find_all("tr"):
             count += 1
             if count >= 5:
@@ -202,12 +201,13 @@ def landerinfo_suche():
                             soup2 = soupobj(f'https://de.wikipedia.org{name_col.get("href", None)}')
                             try:
                                 tableuk = soup2.find("table", {"class": "wikitable sortable mw-collapsible zebra"})
-                            except: print('error! -> Vereinigtes Königreich')
+                            except:
+                                print('error! -> Vereinigtes Königreich')
                             else:
                                 for row2 in tableuk.tbody.find_all("tr"):
                                     if row2.find("a", title=True):
                                         cell = row2.find_all("td")
-                                        print(f"  {cell[0].text}")
+                                        #print(f"  {cell[0].text}")
                                 #     if not row.get('src', None) == None and not 'United_Kingdom' in row.get('src', None):
                                 #         print(row.get('src', None).split("//")[1])
                                 # print('\n')
@@ -253,11 +253,10 @@ result = landerinfo_suche()
 #                 dictionary[name] = [id]
 #     return dictionary.items()
 def laender_suche():
-    # liest von Transfermarkt.de alle Länder mit Ligen ein.
-    # zurückgegeben wird der Name des Landes und deren Transfermarkt-ID
+    # searching countrys at Transfermarkt.de.
+    # returns the Name and the Transfermarkt-ID
     dictionary = {}
     chars = "0123456789,#%&$"
-    # Suche die Tabelle im Quelltext
     count = 0
     soup = soupobj('https://www.transfermarkt.de/wettbewerbe/europa/wettbewerbe')
     try:

@@ -315,7 +315,7 @@ class Player():
 # Für kuze tests bei umbauten an der Klasse!
 
 # s = Player('https://www.transfermarkt.de/marvin-fagan/profil/spieler/991413')
-# s = Player('https://www.transfermarkt.de/daniel-nunez/profil/spieler/1245609')
+# s = Player('https://www.transfermarkt.de/gyu-hyeong-kim/profil/spieler/558084')
 # print(s.get_firstname())
 # print(s.get_lastname())
 # print(s.get_picture())

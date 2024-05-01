@@ -7,25 +7,24 @@ import time
 import os
 
 func.conCheck('8.8.8.8')
-#============= Variablen definieren  =============================================================
+#============= Variables  =============================================================
 
 start = time.time()     #zum messen der Performence
 today = date.today()    #damit die Url auf die aktuelle Mannschaft von diesem Jahr zeigt
 count = 0               #für die ID der sqlite zeile
 t_count = 0
 db_name = 'new_database.db3'    #SQLite DB zum schreiben
-#sql2 = sqlite3.connect('database.db3')   #SQLite DB zum lesen
 
 # Städtelisten D, GB, ES, I, FR
 staedte_urls = ('https://de.wikipedia.org/wiki/Liste_der_Gro%C3%9F-_und_Mittelst%C3%A4dte_in_Deutschland', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_im_Vereinigten_K%C3%B6nigreich', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Spanien', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Italien', 'https://de.wikipedia.org/wiki/Liste_der_St%C3%A4dte_in_Frankreich', )
 
-#============= Erstellt DB mit tbl_land  =============================================================
+#============= Create DB tbl_land  =============================================================
 
 counter = 0
 if os.path.isfile(db_name):
     os.remove(db_name)
     print(' --> Alte Datenbank wurde gelöscht!')
-sql = sqlite3.connect(db_name)   #erstellt eine sqlite-db
+sql = sqlite3.connect(db_name)   #create sqlite-db
 cursor = sql.cursor()
 query = "CREATE TABLE IF NOT EXISTS 'tbl_land' " \
         "(ID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL, " \
@@ -297,6 +296,5 @@ for dbr in listLigen:   #Schleife startet den durchlauf der Ligen aus der SQL-Ab
 
 playerdatensql.close()
 sql.close()
-sql2.close()
 ende = time.time()  #stoppen und ausgabe der Performence Messung
 print('\n           --> Laufzeit: {:5.3f}s'.format(ende-start))
