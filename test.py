@@ -37,25 +37,36 @@ def germanConvert(word):
     word = word.replace("ü", "ue")
     word = word.replace("ß", "ss")
     return word
-def search_teamlinks(url):
-    # searching for the teamlinks on transfermarkt.de, needs the url of a country
-    team_link = []
-    soup = soupobj(url)
-    table = soup.find_all("td", {"class": "hauptlink no-border-links"})
-    for t in table:
-        a = t.find("a", href=True)
-        team_link.append('https://www.transfermarkt.de' + a.get('href', None))
-    #if no teams found, try a different way
-    if(len(team_link) == 0):
-        table =soup.find_all("span", {"class": "vereinsname"})
-        for t in table:
-            a = t.find("a", href=True)
-            if(a.get('href', None).find('spielplan')):
-                link = 'https://www.transfermarkt.de' + a.get('href', None).replace('spielplan', 'kader')
-            team_link.append(link)
-    return team_link
+def search_playerskills(url):
+    count = 0
+    while count < 4:
+        soup = soupobj(url + str(count))
+        player_name = "Kylian Mbappé"
 
+        try:
+            tr = soup.find_all("tr", {"class": "Table_row__4INyY"})
+        except:
+            print("exception\n")
+        else:
+            for t in tr:
+                names = t.find_all("a", {"class": "Table_profileCellAnchor__L23hq"})
+                allnames = [name.text for name in names]
+                print(allnames)
+                # Verwende find_all(), um alle passenden Werte des Spielers zu finden
+                values = t.find_all("span", {"class": "Table_statCellValue__0G9QI"})
 
-url = "https://www.transfermarkt.de/campeonato-brasileiro-serie-c/startseite/pokalwettbewerb/BRA3"
-print(f'{search_teamlinks(url)}')
+                # Extrahiere den ersten Text jedes gefundenen span-Elements
+                allvalues = []
+                for value in values:
+                    text = value.text.strip()  # Entferne Leerzeichen am Anfang und Ende
+                    # Extrahiere nur die ersten beiden Ziffern
+                    if text.isdigit():  # Überprüfe, ob der Text eine Zahl ist
+                        if len(text) >= 3:  # Überprüfe, ob die Zahl mindestens 3 Stellen hat
+                            text = text[:-1]  # Entferne die letzte Ziffer
+                        allvalues.append(text[:2])  # Extrahiere die ersten beiden Ziffern
+                print(allvalues)
+        count += 1
+
+url = "https://www.ea.com/de/games/ea-sports-fc/ratings?gender=0&page="
+print(f'{search_playerskills(url)}')
 
