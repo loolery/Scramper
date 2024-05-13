@@ -1,4 +1,6 @@
 import re
+import sqlite3
+import os
 import requests
 import requests_cache
 import subprocess
@@ -67,6 +69,22 @@ def search_playerskills(url):
                 print(allvalues)
         count += 1
 
-url = "https://www.ea.com/de/games/ea-sports-fc/ratings?gender=0&page="
-print(f'{search_playerskills(url)}')
+db_name = 'test.db3'    #SQLite DB zum schreiben
+url = "https://drop-api.ea.com/rating/fc-24?locale=de&limit=100&gender=0&offset="
+offset = 0
+while offset < 18000:
+    source = requests.get(url+str(offset)).json()
 
+    for sour in source['items']:
+        print(sour['firstName'])
+        sql = sqlite3.connect(db_name)
+        cursor = sql.cursor()
+        query = f"UPDATE 'tbl_personen' SET Fitness=99 WHERE Vorname='{sour['firstName'].replace("'", "")}' AND Nachname='{sour['lastName'].replace("'", "")}'"
+        try:
+            db_result = cursor.execute(query)
+            print(' --> Neuer Wert wurd eingetragen!')
+        except sqlite3.Error as er:
+            print('SQLite error: %s' % (' '.join(er.args)))
+            print("Exception class is: ", er.__class__)
+        sql.commit()
+    offset += 100
